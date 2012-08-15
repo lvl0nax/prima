@@ -1,0 +1,234 @@
+<div class="box box-usual">
+    <h1>Список фильтров</h1>
+    <table class="common-table">
+      <tr>
+        <th style="width: 150px;">Название фильтра</th>
+        <th>Значение фильтра</th>
+      </tr>
+
+    <% @filters.each do |filter| %>
+        <tr id="filter_<%= filter.id%>">
+            <td>
+              <div id="filter_name_<%= filter.id%>">
+                  <span class="jslink" onclick="filter.changeName(<%= filter.id%>)"><%= filter.name%></span>
+                  (<span class="jslink" onclick="filter.delete(<%= filter.id%>)">x</span>)
+              </div>
+              <div id="filter_edit_<%= filter.id%>" class="h">
+                <input type="text" class="input-text" value="<%= filter.name%>" style="margin: 0 0 7px; width: 130px">
+
+                <div style="line-height:25px; font-size:11px;">
+                    <a class="btn btn-blue" href="javascript: void(0)" onclick="filter.saveName(<%= filter.id%>)" style="margin: 0 10px 0 0">Сохранить</a>
+                    <a class="" href="javascript: void(0)" onclick="filter.changeBackName(<%= filter.id%>)">Отмена</a>
+                </div>
+
+              </div>
+              <div class="change-filter-wrap">
+                <div rel="<%= filter.id%>" class="change-filter">
+                  <%= filter.main_flag == true ? 'Выбран главным' : 'Не выбран главным'%>
+                </div>
+              </div>
+            </td>
+            <td>
+                <div class="tags">
+                    <% filter.values.split("&").each do |value|%>
+                      <span class="btn" style="margin: 5px 5px 5px 0" rel="<%= value.split(")*")[0]%>"><%= value.split(")*")[1]%></span>
+                    <% end %>
+                </div>
+                <div>
+                  <input type="text" id="fid_<%= filter.id%>" class="input-text input-empty add-values" onfocus="focusInput('Добавить значение', $(this))" onblur="checkInput('Добавить значение', $(this))" value="Добавить значение" style="vertical-align: top">
+                  <a style="line-height: 22px;" class="btn btn-blue" href="javascript: ;" onclick="filter.addValueAtom(<%= filter.id%>)">+</a>
+                </div>
+            </td>
+        </tr>
+      <% end %>
+
+    </table>
+    <h3>Добавление фильтра</h3>
+    <form action="/create_filter" class="app-form" id="filter-form" onsubmit="return filter.submitForm()">
+      <div class="form-field">
+        <div class="form-label">
+          <label for="name_filtr">Название фильтра</label>
+        </div>
+        <div class="form-data">
+          <input type="text" name="name_filtr" id="name_filtr" class="input-text" value="">
+        </div>
+      </div>
+      <div class="form-field">
+        <div class="form-label">
+          <label for="value_filtr">Значения фильтра</label>
+        </div>
+        <div class="form-data">
+          <input  value="" type="text" name="value_filtr" id="value_filtr" class="input-text" onkeydown="if (event.keyCode == 13) {filter.addValue()}">
+          <a class="btn btn-blue" href="javascript:" id="add-value-filtr">+</a>
+        </div>
+        <div class="form-data" id="values-filtr">
+        </div>
+      </div>
+      <div class="form-field">
+        <div class="form-data">
+          <a class="btn btn-blue" href="javascript: void(0)" onclick="$('#filter-form').submit()">Добавить фильтр</a>
+        </div>
+      </div>
+    </form>
+    <style type="text/css">
+      #value_filtr{vertical-align: top  }
+      #add-value-filtr{line-height: 22px;}
+    </style>
+    <script type="text/javascript">
+      var filter = function(t){
+          t.obj = [];
+
+          t.init = function(){
+              $("#name_filtr").val("");
+              $("#value_filtr").val("");
+
+              $(".add-values").val("Добавить значение")
+              $("#add-value-filtr").click(function(){
+                t.addValue();
+              });
+              $(".change-filter").click(function(){
+                t.changeFlag($(this).attr("rel"), $(this));
+              })
+          };
+
+          t.saveName = function(id){
+              var filterNameO = $("#filter_edit_" + id + " input");
+              if(filterNameO.val().length <= 0){
+                  filterNameO.focus();
+                  w.notify.show("поле не может быть пустым");
+              } else {
+                  $.post("/filters/change_name", {name: filterNameO.val(), id : id}, function(resp){
+                      if(resp.status == 1){
+                          w.popup.alert("Вы успешно поменяли имя фильтра");
+                          $("#filter_name_" + id + " span:eq(0)").html(filterNameO.val());
+                          t.changeBackName(id);
+                      } else {
+                          w.popup.alert("Что-то пошло не так");
+                      }
+                  })
+              }
+          };
+
+          t.changeFlag = function(id, el){
+            $.post("/filters/change_flag", {id : id}, function(resp){
+              if(resp.status == 1){
+                  w.notify.show("Значение поменено");
+                  el.html(resp.checked == true ? "Выбран главным" : "Не выбран главным")
+              }
+            })
+          };
+
+          t.changeName = function(id){
+              $("#filter_name_" + id).hide();
+              $("#filter_edit_" + id).show();
+          };
+
+          t.changeBackName = function(id){
+              $("#filter_name_" + id).show();
+              $("#filter_edit_" + id).hide();
+          };
+
+          t.addValue = function(){
+              var val_text = $("#value_filtr").val();
+
+              if(val_text.length == 0){
+                  w.notify.show("Поле пустое"); $("#value_filtr").focus();
+              } else if(in_array(val_text, t.obj)){
+                  w.notify.show("Такое значение уже есть"); $("#value_filtr").focus();
+              } else {
+                  $("#value_filtr").val("");
+                  $("#values-filtr").append("<div class='values-filtr-item' rel='" + val_text + "'>" + val_text + " <span class='jslink' onclick='filter.removeValue($(this))'><b>x</b></span></div>");
+                  t.obj.push(val_text);
+              }
+          };
+
+          t.removeValue = function(el){
+            var parent = el.parent(),
+                    rel = parent.attr("rel");
+
+              for(var i = 0; i < t.obj.length; i++){
+                  if(rel == t.obj[i]){
+                    t.obj.splice(i, 1);
+                  }
+              }
+
+              parent.remove();
+          };
+
+          t.delete = function(id){
+            $.post("/filters/destroy_filter", {ajax: 1, id: id}, function(resp){
+                if(resp.status == 1){
+                    $("#filter_" + id).remove();
+                }
+            })
+          };
+
+          t.submitForm = function(){
+            var name = $("#name_filtr"),
+                values = $("#value_filtr"),
+                str_val = "";
+
+              if(name.val().length == 0){
+                  w.notify.show("Незаполнено название фильтра");
+                  name.focus();
+                  return false;
+              }
+              if(t.obj.length == 0){
+                  w.notify.show("Незаполнено значения фильтра");
+                  values.focus();
+                  return false;
+              }
+
+              for(var i= 0; i<t.obj.length; i++){
+                  str_val += (i == t.obj.length - 1) ? i + ")*" + t.obj[i] : i + ")*" + t.obj[i] + "&"
+              }
+
+              $.post("/filters/create_filter", {ajax: 1, name : name.val(), values : str_val}, function(resp){
+                  if(resp.status == 1){
+                      w.popup.alert("Фильтр создан!", function(){location.reload()});
+                  }
+              })
+
+            return false;
+          };
+
+          t.addValueAtom = function(id){
+            var inp = $("#fid_"+ id),
+                val = inp.val();
+
+            if(val.length == 0 || val == "Добавить значение") {
+                inp.focus();
+                w.notify.show("Значение не введено");
+                return false;
+            };
+
+            var tags = inp.parent().parent().find(".tags"),
+                saveString = "",
+                max = 0,
+                spans = $("span", tags);
+
+            spans.each(function(index){
+                var thisObj = $(this),
+                    rel = parseInt(thisObj.attr("rel"));
+
+                if(val == thisObj.html()) {
+                    w.notify.show("Значение уже есть");
+                    return false;
+                }
+                if(rel > max){ max = rel }
+                saveString += rel + ")*" + thisObj.html() + "&";
+
+            })
+            saveString += (max + 1) + ")*" + val;
+
+            $.post("/filters/add_value", {ajax: 1, id: id, string: saveString}, function(){
+                tags.append("<span class='btn' style='margin: 5px 5px 5px 0' rel=" + (max + 1) + ">" + val + "</span>");
+                inp.val("Добавьте значение").addClass("input-empty");
+            })
+            return false;
+          };
+          $(t.init);
+          return t;
+      }({})
+    </script>
+</div>

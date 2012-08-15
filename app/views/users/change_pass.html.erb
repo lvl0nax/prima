@@ -1,0 +1,77 @@
+<div class="box box-usual">
+
+    <h1>Изменение пароля</h1>
+    <form class="app-form ov-h" action="/users/change_pass_user" id="change-pass" onsubmit="return submitFunc()">
+      <div class="form-field">
+        <div class="form-label">
+          <label for="old_pass">Старый пароль:</label>
+        </div>
+        <div class="form-data">
+          <input class="input-text" type="text" id="old_pass">
+        </div>
+      </div>
+      <div class="form-field">
+        <div class="form-label">
+          <label for="new_pass">Новый пароль:</label>
+        </div>
+        <div class="form-data">
+          <input class="input-text" id="new_pass" type="password">
+        </div>
+      </div>
+      <div class="form-field">
+        <div class="form-label">
+          <label for="confirm_pass">Подтверждение:</label>
+        </div>
+        <div class="form-data">
+          <input class="input-text" type="password" id="confirm_pass" onblur="checkConfirm($(this))">
+        </div>
+      </div>
+      <div class="form-field">
+        <div class="form-data">
+          <a class="btn btn-blue" href="javascript:;" onclick="$('#change-pass').submit()" id="btn-submit">Сохранить</a>
+        </div>
+      </div>
+    </form>
+
+</div>
+
+<script type="text/javascript">
+    var error_submit = null;
+
+    var checkConfirm = function(){
+        if($("#confirm_pass").val() != $("#new_pass").val()){
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    var submitFunc = function(){
+        var oldPassO = $("#old_pass"),
+            newPassO = $("#new_pass"),
+            confirmPassO = $("#confirm_pass");
+
+        if(confirmPassO.val().length == 0 || oldPassO.val().length == 0 || newPassO.val().length == 0){
+            w.notify.show("Одно из полей пустое");
+            return false;
+        }
+
+        if(!checkConfirm()) {
+            w.notify.show("Пароли не совпадают");
+            return false;
+        }
+        $("#btn-submit").addClass("btn-disab").unbind("click");
+        $.post("/users/change_pass_ajax", {ajax: 1, pass: $("#new_pass").val(), old_pass: $("#old_pass").val()}, function(data){
+            if(data.status == 0) {
+                w.popup.alert("Вы ввели неправильный старый пароль");
+                $("#btn-submit").removeClass("btn-disab").click(function(){
+                    $('#change-pass').submit();
+                })
+            } else if(data.status == 1) {
+                location.href = "/profile"
+            }
+        });
+
+        return false;
+    }
+</script>

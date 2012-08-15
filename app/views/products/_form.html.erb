@@ -1,0 +1,238 @@
+<%= form_for(@product, :html => {:multipart =>true, :class => "app-form ov-h", :onsubmit => "return productFormSubmit()"}) do |f| %>
+
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Название" %></div>
+      <div class="form-data"><%= f.text_field :title, :class=> "input-text" %></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Производитель" %></div>
+      <div class="form-data"><%= f.text_field :brand, :class=> "input-text" %></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Цена за 1 единицу" %></div>
+      <div class="form-data"><%= f.text_field :value_price, :class=> "input-text" %></div>
+  </div>
+  <div class="form-field hidden">
+      <div class="form-label"><%= f.label "Кто добавил товар" %></div>
+      <div class="form-data"><input type="number" id="product_user_id" name="product[user_id]" value="<%= current_user.id%>"></div>
+  </div>
+  <div class="form-field hidden">
+      <div class="form-label"><%= f.label "Категория товара" %></div>
+      <div class="form-data"><input type="number" id="product_category_id" name="product[category_id]" value="<%= params[:category_id]%>"></div>
+  </div>
+  <% if(is_admin?) %>
+    <div class="form-field">
+        <div class="form-label"><%= f.label "Наличие" %></div>
+        <div class="form-data">
+          <select name="product[status]" id="">
+            <% Product::STATUS.each_index do |i| %>
+                <option value="<%= i%>" <%= @product.status == i ? "selected='selected'" : ""%> ><%= Product::STATUS[i]%></option>
+            <% end %>
+          </select>
+        </div>
+    </div>
+  <% end %>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Изображение товара" %></div>
+      <div class="form-data"><%= f.file_field :img_product%></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Описание товара" %></div>
+      <div class="form-data"><%= f.text_area :description , :class => "input-textarea"%></div>
+  </div>
+  <% if(!@filters.blank?)%>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Фильтры" %></div>
+      <div class="form-data">
+        <div class="h"><%= f.text_area :filters , :class => "input-textarea"%></div>
+            <% @filters.each do |filter| %>
+                <div class="filter-title">
+                  Название: <%= filter.name%>
+                </div>
+                <div class="filter-values">
+                    <% filter.values.split("&").each do |filter_val|
+                        id_val = filter_val.split(")*")[0]
+                        source_val = filter_val.split(")*")[1]
+                    %>
+                        <span class="btn btn-add-filter <%= (!@product.id.blank? && !@prod_filter[filter.id.to_s].blank? && @prod_filter[filter.id.to_s] == id_val) ? 'btn-blue' : ''%>" rel="<%= filter.id.to_s + "-" +id_val %>" style="margin: 0 0 5px"><%= source_val%></span>
+                    <% end %>
+                </div>
+            <% end %>
+        <div id="filters-block"></div>
+      </div>
+  </div>
+  <% end %>
+
+  <% if (is_admin?) %>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Скидки" %></div>
+      <div class="form-data" style="padding:5px 0 0">
+        <div id="discount-area"></div>
+        <div class="add-discount">
+            <div class="add-discount-title">Добавление скидки:</div>
+            <div>
+              кол-во  <input type="text" class="input-number" id="discount-number" onkeydown="return w.utils.checkNum(event)"> &nbsp; &nbsp; скидка <input type="text" class="input-number" id="discount-percent" onkeydown="return w.utils.checkNum(event)"> % &nbsp;
+              <a class="btn btn-blue" href="javascript: void(0)" onclick="product.addDiscount()">+</a>
+            </div>
+        </div>
+        <%= f.text_area :discount , :class => "h"%>
+      </div>
+  </div>
+  <% end %>
+
+  <div class="form-field">
+      <div class="form-data"><%= f.submit(:value => @label_btn) %></div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+    var product = function(t){
+        t.discArray = [];
+        t.discObj = {};
+        t.discArea = $("#discount-area");
+
+        <% if !@product.arr_discount.blank? %>
+            <% @product.arr_discount.each do |disc|%>
+                t.discObj[<%= disc[0]%>] = <%= disc[1]%>;
+            <% end %>
+        <% end %>
+
+        t.init = function(){
+            $("#product_description").val(w.utils.brToN($("#product_description").val()));
+
+            $(".btn-add-filter").click(function(){
+                var obj_filter = []
+
+                if( !$(this).hasClass("btn-blue") ){
+                    $(this).closest("div").find(".btn").removeClass("btn-blue");
+                    $(this).addClass("btn-blue")
+                } else {
+                    $(this).removeClass("btn-blue")
+                }
+
+                $(".btn-add-filter.btn-blue").each(function(){
+                    obj_filter.push($(this).attr("rel"));
+                })
+                obj_filter_str = obj_filter.join("&");
+                $("#product_filters").val(obj_filter_str);
+            });
+
+            for (var i in t.discObj){
+                t.discArray.push(i);
+            };
+            t.drawDisc();
+        };
+
+        t.addDiscount = function(){
+            var num = $("#discount-number").val(),
+                precent = $("#discount-percent").val();
+            if(parseInt(precent) > 100) {
+                w.notify.show("Нельзя указывать больше 100 процентов");
+                return false;
+            }
+            if(t.discObj[num] == undefined){
+                t.discObj[num] = precent;
+                t.discArray.push(num);
+                t.drawDisc();
+            } else {
+                w.notify.show("Такая скидка есть");
+                return false;
+            }
+        };
+
+        t.deleteDisc = function(num){
+            if(t.discObj[num] != undefined){
+                delete t.discObj[num];
+                for (var i = 0; i < t.discArray.length; i++){
+                    if (parseInt(t.discArray[i]) == num){
+                        t.discArray.splice(i,1);
+                    }
+                }
+                t.drawDisc();
+            } else {
+                return false;
+            }
+        };
+
+        t.drawDisc = function(){
+            if(w.utils.sizeObj(t.discObj) > 0){
+                var str = "", str2 = "";
+                t.discArray = t.discArray.sort();
+                for(var i = 0; i < t.discArray.length; i++) {
+                    str += "<div>начиная с " + t.discArray[i] + ", скидка составит " + t.discObj[t.discArray[i]] + " &nbsp; <span class='jslink' onclick='product.deleteDisc(" + t.discArray[i] + ")'>удалить скидку</span></div>";
+                    str2 +=  t.discArray[i] + ")*" + t.discObj[t.discArray[i]] + (i != (t.discArray.length - 1) ? "&" : "");
+                }
+                $("#product_discount").val(str2);
+                t.discArea.html(str);
+            } else {
+                $("#product_discount").val("");
+                t.discArea.html("Скидок ещё не добавлено")
+            }
+        }
+        $(t.init);
+        return t;
+    }({});
+
+    var productFormSubmit = function(){
+
+        var product_titleO = $("#product_title"),
+            product_brandO = $("#product_brand"),
+            product_value_priceO = $("#product_value_price"),
+            img_productO = $("#product_img_product"),
+            product_descriptionO = $("#product_description"),
+
+            product_titleV = product_titleO.val(),
+            product_brandV = product_brandO.val(),
+            product_value_priceV = product_value_priceO.val(),
+            img_productV = img_productO.val(),
+            product_descriptionV = product_descriptionO.val(),
+                    error_mess = "", error_flag = null;
+
+        $(".app-form .form-field").removeClass("fail");
+
+        if(product_titleV.length < 1){
+            product_titleO.parent().parent().addClass("fail")
+            error_mess += "- Название продукта<br/>";
+            error_flag = 1;
+        }
+        if(product_brandV.length < 1){
+            product_brandO.parent().parent().addClass("fail")
+            error_mess += "- Производитель<br/>";
+            error_flag = 1;
+        }
+        if(product_value_priceV.length < 1){
+            product_value_priceO.parent().parent().addClass("fail")
+            error_mess += "- Цена за единицу<br/>";
+            error_flag = 1;
+        }
+        <% if (@product.id.blank?) %>
+            if(img_productV.length < 1){
+                img_productO.parent().parent().addClass("fail")
+                error_mess += "- Картинка продукта<br/>";
+                error_flag = 1;
+            }
+        <% end %>
+
+        if(product_descriptionV.length < 1){
+            product_descriptionO.parent().parent().addClass("fail")
+            error_mess += "- Описание продукта<br/>";
+            error_flag = 1;
+        }
+
+
+        if(error_flag){
+            w.notify.show("Проверьте форму, не указаны: <br/>" + error_mess, 3000);
+            return false;
+        }
+        
+        product_descriptionO.val(w.utils.nToBr(product_descriptionO.val()));
+        
+        var obj_filter = [];
+        $(".btn-add-filter.btn-blue").each(function(){
+            obj_filter.push($(this).attr("rel"));
+        });
+
+        obj_filter_str = obj_filter.join("&");
+        $("#product_filters").val(obj_filter_str);
+    };
+</script>

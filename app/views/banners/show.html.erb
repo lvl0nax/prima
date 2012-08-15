@@ -1,0 +1,31 @@
+<div class="box box-usual">
+  <p id="notice"><%= notice %></p>
+
+  <p>
+    <b>Название:</b>
+    <%= @banner.title %>
+  </p>
+
+  <p>
+    <b>Url для перехода:</b>
+    <%= @banner.url %>
+  </p>
+
+  <p>
+    <b>Сам баннер:</b>
+    <%= @banner.img_banner_url(:left).to_s %>
+  </p>
+
+  <p>
+    <b>Описнаие:</b>
+    <%= @banner.description %>
+  </p>
+
+
+  <% if(is_admin?)%>
+      <div class="admin-links">
+          <%= link_to 'Редактирвоать', edit_banner_path(@banner) %>
+      </div>
+  <% end %>
+
+</div>

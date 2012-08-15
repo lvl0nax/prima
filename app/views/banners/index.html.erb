@@ -1,0 +1,27 @@
+<div class="box box-usual">
+    <h1>Страница с баннерами</h1>
+
+    <% @banners.each do |banner| %>
+        <div class="banner-item">
+            <%= image_tag banner.img_banner_url(:left)%>
+            <div class="banner-item-content">
+                <div class="banner-item-char">
+                    Титул для баннера: <%= banner.title %><br/>
+                    Url для баннера: <%= banner.url %><br/>
+                    <% if !banner.position.blank? %>
+                        Находится: <%=Banner::POSITION[banner.position]%> <br>
+                    <% end%>
+                    Description для баннера: <%= banner.description %>
+                </div>
+                <div class="admin-links">
+                    <%= link_to 'Редактировать', edit_banner_path(banner) %>
+                    <%= link_to 'Удалить', banner, :confirm => 'Are you sure?', :method => :delete %>
+                </div>
+            </div>
+        </div>
+    <% end %>
+
+
+    <%= link_to 'Добавить баннер', new_banner_path %>
+</div>
+

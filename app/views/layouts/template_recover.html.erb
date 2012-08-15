@@ -1,0 +1,45 @@
+<form id="form-recover" class="app-form" action="/users/recoverPass" method="post" onsubmit="return submit_func()">
+
+  <div class="form-field">
+    <div class="form-label">
+      <label for="email">E-mail:</label>
+    </div>
+    <div class="form-data">
+      <input class="input-text" type="text" name="email" id="email">
+    </div>
+  </div>
+  <div class="form-field form-btns">
+    <div class="form-data">
+      <a class="btn btn-blue" id="subit-btn" href="javascript:void(0)" onclick="$('#form-recover').submit()">Отправить новый пароль</a>
+    </div>
+  </div>
+</form>
+<script type="text/javascript">
+  submit_func = function(){
+      var u_emailO = $("#email"),
+          u_emailV = u_emailO.val();
+      if(u_emailV.length < 1){
+          alert("Незаполнено поле E-mail");
+          return false;
+      }
+      $("#subit-btn").addClass("btn-disab").unbind("click").after("<img src='/assets/loader.gif' id='loader' style='margin: 3px 0 0 10px'>");
+
+      $.post("/users/recover_pass", {ajax: 1, email : u_emailV}, function(resp){
+          if(resp.status == 1){
+              w.popup.alert("Вам отправлено письмо с новым паролем, используйте его для входа" , {width: 500})
+          } else {
+              alert("Пользователя с таким email незарегистрировано");
+              $("#loader").remove();
+              $("#subit-btn").removeClass("btn-disab").click(function(){
+                $('#form-recover').submit();
+              });
+          }
+      })
+      return false;
+  }
+</script>
+
+<style type="text/css">
+  #form-recover .form-label{width: 70px}
+  #form-recover .form-data{margin: 0 0 0 80px}
+</style>

@@ -1,0 +1,190 @@
+<div class="box box-usual">
+    <h1 class="title-main-box">Оформление заказа</h1>
+    <% if(!@order.blank?) %>
+        Обратите внимание на то, что заказ разбивается по поставщикам, а также на то, что заказ к отдельно взятому поставщику не будет оформлен, если сумма вашего заказа данному поставщику меньше чем минимальная сумма заказа для данного поставщика: <br/>
+        <br/>
+        <div id="orders-block">
+            <% counter = 0 %>
+            <% @order_users_obj.each do |fu|%>
+
+              <div id="order_user_<%= fu.id%>">
+                <% counter += 1 %>
+
+                <%= counter.to_s + ") " + (fu.company_name.blank? ? "Не указано" : fu.company_name) %> ( Минимальная сумма заказа <%= fu.minimal_price.blank? ? 'не указана' : fu.minimal_price%> )
+                <table class="list-products-card" id="for_user_<%= fu.id%>">
+                  <tr class="tr-top">
+                    <td>Наименование товара</td>
+                    <td>Количество</td>
+                    <td>Цена</td>
+                    <td class="td-last">Сумма</td>
+                  </tr>
+
+                  <% card_total_price = 0 %>
+                  <% @order.each do |pc|%>
+                      <% if(pc[1]["user"] == fu.id.to_s) %>
+                      <tr>
+                        <td><%=pc[1]["name"]%></td>
+                        <td>
+                          <a class="btn btn-blue btn-counter" href="javascript: void(0)" onclick="check.minusOneFromCard($(this), <%= pc[0]%>)"><b>-</b></a>
+                          <span class="count"><%=pc[1]["count"]%></span>
+                          <a class="btn btn-blue btn-counter" href="javascript: void(0)" onclick="check.addOneToCard($(this), <%= pc[0]%>)"><b>+</b></a>
+                        </td>
+                        <td><%=pc[1]["price"]%></td>
+                        <td class="td-last"><%=pc[1]["count"].to_i * pc[1]["price"].to_f%></td>
+                      </tr>
+                          <% card_total_price += pc[1]["count"].to_i * pc[1]["price"].to_f %>
+                      <% end %>
+                  <% end %>
+
+                  <tr class="tr-bottom">
+                    <td colspan="4" class="td-last">Итог: <%= card_total_price%></td>
+                  </tr>
+                </table>
+              </div>
+            <% end %>
+        </div>
+
+        <% if(!current_user) %>
+            <div class="info-box">
+                Если вы хотите остлеживать состояние заказа, то вам необходимо <a href="/users/new">зарегистрироваться</a>, либо если вы уже зарегистрировались у нас, то можете просто
+            <a href="javascript: void(0)" onclick="w.session.popup()">войти</a> под своей учётной записью.
+            </div>
+        <% end %>
+        <div class="app-form ov-h">
+            <h4>Ваши контактные данные</h4>
+            <div class="form-field">
+                <% if (current_user && (current_user.role.to_s == '1' || current_user.role.to_s == '2')) %>
+                    <div class="form-label">
+                        <label for="fio">ФИО*:</label>
+                    </div>
+                    <div class="form-data">
+                        <input class="input-text" type="text" id="fio" value="<%= current_user ? current_user.name : ''%>">
+                    </div>
+                <% elsif (current_user && (current_user.role.to_s == '3' || current_user.role.to_s == '4')) %>
+                    <div class="form-label">
+                        <label for="fio">ФИО контактного лица*:</label>
+                    </div>
+                    <div class="form-data">
+                        <input class="input-text" type="text" id="fio" value="<%= current_user ? current_user.contact_fio : ''%>">
+                    </div>
+                <% else %>
+                    <div class="form-label">
+                        <label for="fio">ФИО*:</label>
+                    </div>
+                    <div class="form-data">
+                        <input type="text" id="fio" value="" class="input-text">
+                    </div>
+                <% end %>
+            </div>
+            <div class="form-field">
+                <% if (current_user && (current_user.role.to_s == '1' || current_user.role.to_s == '2')) %>
+                    <div class="form-label">
+                        <label for="mobile-number">Телефон для связи*:</label>
+                    </div>
+                    <div class="form-data">
+                        <input class="input-text" type="text" id="mobile-number" value="<%= current_user ? current_user.phone : ''%>">
+                    </div>
+                <% elsif (current_user && (current_user.role.to_s == '3' || current_user.role.to_s == '4')) %>
+                    <div class="form-label">
+                        <label for="mobile-number">Телефон для связи*:</label>
+                    </div>
+                    <div class="form-data">
+                        <input class="input-text" type="text" id="mobile-number" value="<%= current_user ? current_user.phone : ''%>">
+                    </div>
+                <% else %>
+                    <div class="form-label">
+                        <label class="f-label" for="mobile-number">Телефон для связи*:</label>
+                    </div>
+                    <div class="form-data">
+                        <input type="text" id="mobile-number" value="" class="input-text">
+                    </div>
+                <% end %>
+                <div class="form-helper form-data">формат записи:  +7 900 0000000</div>
+            </div>
+            <% if (!current_user) %>
+            <div class="form-field">
+                    <div class="form-label">
+                        <label for="mobile-number">Email для связи*:</label>
+                    </div>
+                    <div class="form-data">
+                        <input class="input-text" type="text" id="email_order" value="">
+                    </div>
+            </div>
+            <% else %>
+              <input type="text" id="email_order" class="h" value="<%= current_user.email%>">
+            <% end %>
+            <div class="form-field">
+                <div class="form-label">
+                    <label for="mobile-number">Адрес доставки:</label>
+                </div>
+                <div class="form-data">
+                    <input class="input-text" type="text" id="address" value="">
+                </div>
+            </div>
+            <div class="form-field">
+                <div class="form-label">
+                    <label for="time">Время для связи:</label>
+                </div>
+                <div class="form-data">
+                  <label class="radio-label"><input type="radio" value="В первой половине дня с 8 до 14" name="time" checked="checked">В первой половине дня с 8 до 14</label>
+                  <label class="radio-label"><input type="radio" value="Во второй половине дня с 14 до 20" name="time">Во второй половине дня с 14 до 20</label>
+                </div>
+                <div class="form-helper form-data" style="padding: 5px 0 0">
+                  для Выборгского и Калининского района доставка осуществляется за 2 часа
+                </div>
+            </div>
+            <div class="form-field">
+                <div class="form-data">
+                    <a class="btn btn-blue" href="javascript:void(0)" style="font-size:15px" onclick="check.getNextStep($(this))">Оформить заказ</a>
+                </div>
+            </div>
+            <div class="append-form-info" style="font-size: 11px; padding: 10px 0 20px">
+              Нажимая на кнопку "Оформить заказ", вы соглашаетесь с <a href="javascript: void(0)" onclick="termPopup()">условиями доставки</a><br/>
+              * - отмечены поля, обязательные для заполнения
+            </div>
+        </div>
+    <% end %>
+
+</div>
+<script type="text/javascript">
+    check.users = [];
+    <% @order_users_obj.each do |fu| %>
+        check.users.push(<%= fu.id%>)
+    <% end %>
+    check.minimal_price = {};
+    <% @order_users_obj.each do |fu| %>
+        check.minimal_price[<%= fu.id%>] = <%= fu.minimal_price.blank? ? 0 : fu.minimal_price%>
+    <% end %>
+    card.init();
+    check.init();
+    function termPopup(){
+        w.popup.show($("#term-popup").html(), {title: "Условия доставки", width: 500})
+    }
+</script>
+<div id="term-popup" class="h">
+  <div class="term-wrap">
+      <div class="term-inner">
+        <p>ООО «Эмбриа разработка», ООО «ФотоСтрана», именуемые далее вместе и по отдельности «Администрация» (Лицензиар), и физическое лицо, пользователь сети интернет-сайтов развлечений и знакомств, обслуживаемых Администрацией («Проект»), именуемый далее «Пользователь» (Лицензиат), заключили настоящее Соглашение, далее «Соглашение», о нижеследующем:</p>
+
+        <p>Настоящее Соглашение является офертой – адресованным конкретному Пользователю предложением, которое выражает намерение лица, сделавшего предложение (Администрации Проекта), считать себя заключившим соглашение с адресатом, которым будет принято предложение (Ст. 435 Гражданского кодекса РФ).</p>
+
+        <p>Принимая настоящее Соглашение, Пользователь подтверждает свое согласие на обработку Администрацией его персональных данных, запрашиваемых в случае возникновения спорных ситуаций и в том числе для подтверждения личности Пользователя. Администрация обрабатывает персональные данные Пользователя в целях исполнения настоящего Пользовательского соглашения, а также в целях обработки запросов, жалоб, предложений Пользователей.</p>
+
+        <p>Администрация принимает все необходимые меры для защиты персональных данных Пользователя от неправомерного доступа, изменения, раскрытия или уничтожения. Обработка персональных данных Пользователя осуществляется в соответствии с законодательством Российской Федерации. Раскрытие предоставленной Пользователем информации может быть произведено лишь в соответствии с действующим законодательством Российской Федерации по требованию суда, правоохранительных органов, а равно в иных предусмотренных законодательством Российской Федерации случаях.</p>
+
+        <p>1. Предмет Соглашения:</p>
+
+        <p>1.1. Администрация предоставляет Пользователю неисключительную лицензию, а именно право использовать программы для ЭВМ, в отношении которых Администрация является правообладателем, в целях приобретения Пользователем товаров и услуг на сайтах партнеров Администрации, а также других Пользователей Проекта.</p>
+        <p>1.1. Администрация предоставляет Пользователю неисключительную лицензию, а именно право использовать программы для ЭВМ, в отношении которых Администрация является правообладателем, в целях приобретения Пользователем товаров и услуг на сайтах партнеров Администрации, а также других Пользователей Проекта.</p>
+        <p>1.1. Администрация предоставляет Пользователю неисключительную лицензию, а именно право использовать программы для ЭВМ, в отношении которых Администрация является правообладателем, в целях приобретения Пользователем товаров и услуг на сайтах партнеров Администрации, а также других Пользователей Проекта.</p>
+        <p>1.1. Администрация предоставляет Пользователю неисключительную лицензию, а именно право использовать программы для ЭВМ, в отношении которых Администрация является правообладателем, в целях приобретения Пользователем товаров и услуг на сайтах партнеров Администрации, а также других Пользователей Проекта.</p>
+        <p>1.1. Администрация предоставляет Пользователю неисключительную лицензию, а именно право использовать программы для ЭВМ, в отношении которых Администрация является правообладателем, в целях приобретения Пользователем товаров и услуг на сайтах партнеров Администрации, а также других Пользователей Проекта.</p>
+        <p>1.1. Администрация предоставляет Пользователю неисключительную лицензию, а именно право использовать программы для ЭВМ, в отношении которых Администрация является правообладателем, в целях приобретения Пользователем товаров и услуг на сайтах партнеров Администрации, а также других Пользователей Проекта.</p>
+        <p>1.1. Администрация предоставляет Пользователю неисключительную лицензию, а именно право использовать программы для ЭВМ, в отношении которых Администрация является правообладателем, в целях приобретения Пользователем товаров и услуг на сайтах партнеров Администрации, а также других Пользователей Проекта.</p>
+      </div>
+  </div>
+  <style type="text/css">
+    .term-wrap{max-height: 200px; border: 1px solid #f2f2f2; padding: 10px; overflow-y:scroll;}
+    .term-wrap p{padding: 0 0 10px; text-indent: 10px}
+  </style>
+</div>

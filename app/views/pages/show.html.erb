@@ -1,0 +1,17 @@
+<% content_for :meta do %>
+    <meta name="description" content="<%= @page.descpage %>" />
+    <meta name="keywords" content="<%= @page.keywords%>" />
+<% end %>
+
+<h1 class="h"><%= @page.title%></h1>
+
+<div class="">
+  <%= raw @page.description%>
+</div>
+
+<% if(is_admin?) %>
+    <div class="admin-links">
+        <%= link_to 'Редактировать страницу', edit_page_path(@page) %>
+    </div>
+<% end %>
+

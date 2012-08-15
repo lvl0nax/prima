@@ -1,0 +1,149 @@
+<div class="box box-usual">
+
+    <% if(@user.role.to_i == 1 || @user.role.to_i == 2) %>
+        <h1>Профиль</h1>
+        <% else %>
+        <h1>О компании</h1>
+    <% end %>
+
+    <div class="profile">
+        <div class="profile-left">
+            <%= image_tag @user.img_url(:big).to_s %>
+        </div>
+        <div class="profile-right">
+            <% if(@user.role.to_i == 1 || @user.role.to_i == 2) %>
+            <div class="profile-info">
+                <div class="profile-info-label">ФИО:</div>
+                <div class="profile-info-data"><%= @user.name %></div>
+            </div>
+            <% else %>
+            <div class="profile-info">
+                <div class="profile-info-label">Название компании:</div>
+                <div class="profile-info-data"><%= @user.company_name %></div>
+            </div>
+            <div class="profile-info">
+                <div class="profile-info-label">Контактное лицо:</div>
+                <div class="profile-info-data"><%= @user.contact_fio %></div>
+            </div>
+            <% end %>
+            <div class="profile-info">
+                <div class="profile-info-label">Телефон:</div>
+                <div class="profile-info-data"><%= @user.phone %></div>
+            </div>
+            <div class="profile-info">
+                <div class="profile-info-label">Ваш e-mail:</div>
+                <div class="profile-info-data"><%= @user.email %></div>
+            </div>
+            <div class="profile-info">
+                <div class="profile-info-label">Вы:</div>
+                <div class="profile-info-data"><%= User::ROLES[@user.role.to_i] %></div>
+            </div>
+            <div class="profile-info">
+                <div class="profile-info-label"><%= (@user.role.to_i == 1 || @user.role.to_i == 2) ? "О себе:" : "О компании" %></div>
+                <div class="profile-info-data"><%= @user.about.blank? ? "незаполнено" : @user.about%></div>
+            </div>
+            <% if ((current_user && current_user == @user) || is_admin?) %>
+            <div class="profile-info-link">
+                <%= link_to 'Изменить пароль', "/users/change_pass" %> &nbsp; | &nbsp;
+                <%= link_to 'Редактировать данные', edit_user_path(@user) %>
+            </div>
+            <% end %>
+        </div>
+    </div>
+    <% if(!@user.orders.blank? && ((current_user && current_user == @user) || is_admin?)) %>
+        <% if(current_user != @user) %>
+            <div class="plant">Заказы для @user.company_name</div>
+        <% else %>
+            <div class="plant">Заказы для вас</div>
+        <% end %>
+
+        <ul class="list-orders">
+            <%
+               count_order = 0
+               @user.orders.each do |o|
+            %>
+                <li class = "<%= count_order > 2 ? 'h' : '' %>">
+                    <div class="fl-r">От <%= o.created_at.to_s(:db)%></div>
+                    <a href="/orders/<%= o.id%>">Заказ #<%= o.id%> (Статус: <%= Order::STATUS[o.status]%>)</a>
+                </li>
+            <%
+               count_order += 1
+               end
+            %>
+
+        </ul>
+
+        <% if(count_order > 2) %>
+            <div class="more-link" style="padding: 0 10px 10px">
+                <a href="javascript: void(0)" onclick='$(".list-orders .h").show(); $(this).parent().hide()'>Показать все</a>
+            </div>
+        <% end %>
+
+    <% end%>
+
+    <% if(!@user.suborders.blank? && ((current_user && current_user == @user) || is_admin?)) %>
+        <% if(current_user != @user) %>
+            <div class="plant">Заказы, которые сделал пользователь</div>
+        <% else %>
+            <div class="plant">Заказы, которые вы сделали</div>
+        <% end %>
+        <ul class="my-order">
+            <%
+               count_order = 0
+               @user.suborders.each do |o|
+            %>
+                <li class="my-order-item <%= count_order > 2 ? 'h' : '' %>">
+                    <div class="my-order-label">
+                        Номера подзаказов:
+                    </div>
+                    <div class="my-order-data">
+                        <% o.uriks.split('-').each do |ol|%>
+                            <% buffer_order = Order.find_by_id(ol)%>
+                            <div class="nclear">
+                                <a href="/orders/<%= buffer_order.id%>">Заказ #<%= buffer_order.id%> (статус <%= Order::STATUS[buffer_order.status]%>)</a>
+                            </div>
+                        <% end %>
+                    </div>
+                </li>
+            <%
+               count_order += 1
+               end
+            %>
+        </ul>
+        <% if(count_order > 2) %>
+            <div class="more-link" style="padding: 0 10px 10px">
+                <a href="javascript: void(0)" onclick="$('.my-order-item.h').removeClass('h'); $(this).parent().hide()">Посмотреть всё</a>
+            </div>
+        <% end %>
+    <% end%>
+
+    <% if(!@user.products.blank?) %>
+        <% if current_user && current_user == @user %>
+            <div class="plant">Товары, которые вы добавили</div>
+        <% else %>
+            <div class="plant">Товары, которые добавил поставщик</div>
+        <% end %>
+        <ul class="list-products">
+            <% count_p = 0
+               @user.products.each do |p| %>
+                <li class="<%= count_p > 2 ? 'h' : '' %>">
+                    <a class="product-item" href="<%= product_path(p) %>">
+                        <span class="product-top"><%= p.title%></span>
+                        <span class="product-photo" style="background-image: url(<%= p.img_product_url(:thumb).to_s%>)">
+                            <%= image_tag p.img_product_url(:thumb).to_s%>
+                            <span class="product-price">
+                                <%= p.value_price + ".-"%>
+                            </span>
+                        </span>
+                    </a>
+                </li>
+                <% count_p += 1 %>
+            <% end %>
+        </ul>
+        <% if(count_p > 2) %>
+            <div class="more-link">
+                <a href="javascript: void(0)" onclick='$(".list-products .h").removeClass("h"); $(this).parent().hide()'>Показать все</a>
+            </div>
+        <% end %>
+    <% end %>
+</div>

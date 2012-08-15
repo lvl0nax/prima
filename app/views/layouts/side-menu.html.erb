@@ -1,0 +1,35 @@
+<div class="side-bar-wrap">
+    <% if(all_categories) %>
+        <ul class="side-bar">
+            <% all_categories.each do |c| %>
+                <li>
+                  <a href="<%= category_path(c)%>"><i></i><%= c.name%></a>
+                </li>
+            <% end %>
+        </ul>
+    <% end %>
+</div>
+<% if(is_admin?) %>
+    <div class="side-bar-wrap">
+        <ul class="side-bar">
+            <li>
+                <a href="/users/list"><i></i>Страница пользователей</a>
+            </li>
+            <li>
+                <a href="<%= banners_path%>"><i></i>Страница баннеров</a>
+            </li>
+            <li>
+                <a href="<%= new_page_path%>"><i></i>Добавить страницу</a>
+            </li>
+            <li>
+                <a href="<%= new_category_path%>"><i></i>Добавить категорию</a>
+            </li>
+            <li>
+                <a href="<%= filters_path%>"><i></i>Страница фильтров</a>
+            </li>
+            <li>
+                <a href="<%= orders_path%>"><i></i>Список заказов</a>
+            </li>
+        </ul>
+    </div>
+<% end  %>

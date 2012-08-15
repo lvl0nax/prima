@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  value_type: MyString
+  value_price: MyString
+  user_id: 1
+  category_id: 1
+  img: MyString
+  description: MyText
+
+two:
+  value_type: MyString
+  value_price: MyString
+  user_id: 1
+  category_id: 1
+  img: MyString
+  description: MyText

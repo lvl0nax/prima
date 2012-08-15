@@ -1,0 +1,64 @@
+<%= form_for(@banner,:html => {:multipart =>true, :class => "app-form ov-h", :onsubmit => "return bannerFormSubmit();"}) do |f| %>
+
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Название" %></div>
+      <div class="form-data"><%= f.text_field :title, :class => "input-text" %></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Url перехода" %></div>
+      <div class="form-data"><%= f.text_field :url, :class => "input-text"%></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Картинка (png, jpg)" %></div>
+      <div class="form-data"><%= f.file_field :img_banner %></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Дополнительное описание" %></div>
+      <div class="form-data"><%= f.text_area :description , :class => "input-textarea"%></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Позиция" %></div>
+      <div class="form-data">
+        <label class="radio-label"><input type="radio" <%= ((!@banner.position.blank? && @banner.position == 0) || @banner.position.blank?) ? 'checked="checked"' : ''%> name="banner[position]" value="0">Без разницы</label>
+        <label class="radio-label"><input type="radio" <%= (!@banner.position.blank? && @banner.position == 1) ? 'checked="checked"' : ''%> name="banner[position]" value="1">Сверху</label>
+        <label class="radio-label"><input type="radio" <%= (!@banner.position.blank? && @banner.position == 2) ? 'checked="checked"' : ''%> name="banner[position]" value="2">Слева</label>
+      </div>
+  </div>
+  <div class="form-field">
+      <div class="form-data"><%= f.submit(:value => @label_btn) %></div>
+  </div>
+
+<% end %>
+<script type="text/javascript">
+
+    var bannerFormSubmit = function(){
+
+        var banner_titleO = $("#banner_title"),
+            banner_urlO = $("#banner_url"),
+            img_bannerO = $("#banner_img_banner"),
+
+            banner_titleV = banner_titleO.val(),
+            banner_urlV = banner_urlO.val(),
+            img_bannerV = img_bannerO.val(),
+                    error_mess = "", error_flag = null;
+
+        $(".app-form .form-field").removeClass("fail");
+
+        if(banner_titleV.length < 1){
+            banner_titleO.parent().parent().addClass("fail")
+            error_mess += "- Название баннера<br/>";
+            error_flag = 1;
+        }
+        if(banner_urlV.length < 1){
+            banner_urlO.parent().parent().addClass("fail")
+            error_mess += "- Ссылка для баннера<br/>";
+            error_flag = 1;
+        }
+
+        if(error_flag){
+
+            w.notify.show("Проверьте форму, не указаны: <br/>" + error_mess, 3000);
+            return false;
+        }
+    };
+</script>

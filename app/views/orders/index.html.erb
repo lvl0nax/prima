@@ -1,0 +1,45 @@
+<div class="box box-usual">
+
+    <h1>Список всех заказов</h1>
+
+    <% if(@orders.blank?) %>
+        Не создано ни одного заказа
+    <% else%>
+        <table class="list-orders">
+            <tr>
+              <td>Номер</td>
+              <td>Кто заказал</td>
+              <td>Кому заказали</td>
+              <td>Статус</td>
+              <td>Сумма</td>
+              <td>Дата заказа</td>
+            </tr>
+            <%@orders.each do |o|%>
+                <tr>
+                  <td>
+                    <a href="/orders/<%= o.id%>">#<%= o.id%></a>
+                  </td>
+                  <td>
+                      <% if o.userto_id != -1
+                        @userTo = User.find_by_id(o.userto_id)%>
+                        <a href="/profile/<%= @userTo.id%>"><%= (@userTo.role.to_i == 1 || @userTo.role.to_i == 2) ? truncate(@userTo.name, {:length => 14}) : truncate(@userTo.company_name, {:length => 14})%></a>
+                        <% else %>
+                        нет в базе
+                      <% end %>
+                  </td>
+                  <td>
+                    <a href="/profile/<%= o.user.id%>"><%= (o.user.role.to_i == 1 || o.user.role.to_i == 2) ? truncate(o.user.name, {:length => 14}) : truncate(o.user.company_name, {:length => 14})%></a>
+                  </td>
+                  <td>
+                    <%= Order::STATUS[o.status]%>
+                  </td>
+                  <td>
+                    <%= o.total%>
+                  </td>
+                  <td><%= o.created_at.to_s(:db)%></td>
+                </tr>
+            <%end%>
+        </table>
+    <% end  %>
+</div>
+

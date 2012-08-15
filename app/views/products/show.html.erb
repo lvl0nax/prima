@@ -1,0 +1,61 @@
+<div class="box box-usual">
+
+  <h1><%=@product.title %></h1>
+
+  <div class="product-show nclear">
+      <div class="product-show-photo" style="background-image: url(<%= @product.img_product_url(:big).to_s%>)">
+          <div class="product-show-price">
+              <%= @product.value_price %>.-
+          </div>
+      </div>
+      <div class="product-show-info">
+          <div class="product-info-item">
+              <div class="product-info-label">Товар категории:</div>
+              <div class="product-info-data"><%= @product.category.name%></div>
+          </div>
+          <div class="product-info-item">
+              <div class="product-info-label">Производитель:</div>
+              <div class="product-info-data"><%= @product.brand %></div>
+          </div>
+          <div class="product-info-item">
+              <div class="product-info-label">Поставщик:</div>
+              <div class="product-info-data"><a href="<%= "/profile/" + @product.user.id.to_s %>"><%=@product.user.name %></a></div>
+          </div>
+          <% if(!@product.arr_val.blank?) %>
+              <div class="product-info-item">
+                  <div class="product-info-label">Характеристики:</div>
+                  <% @product.arr_val.each do |fil| %>
+                  <div class="product-info-data">
+                      <% filter = Filter.find_by_id(fil[0]) %>
+                      <% if !filter.blank? %>
+                          <%= filter.name %> : <%= filter.arr_val[fil[1]]%>
+                      <% end %>
+                  </div>
+                  <% end %>
+              </div>
+          <% end %>
+      </div>
+  </div>
+  <div class="product-info-item">
+      <div class="product-info-label" style="float: none">Описание</div>
+      <div class="product-info-data" style="margin: 0"><%=raw @product.description %></div>
+  </div>
+  <% if(@product.status == 1) %>
+      <div class="ta-r">
+          Товар отсутствует на складе
+      </div>
+  <% else %>
+      <div class="ta-r">
+          Кол-во
+          <input type="text" value="1" id="product_<%= @product.id%>" class="added-block-input input-text" onkeydown="return w.utils.checkNum(event)">
+          <a class="add-to-order btn btn-blue" data-id="<%= @product.id%>" data-name="<%= @product.title%>" data-price="<%= @product.value_price%>" data-discount="<%= @product.discount.blank? ? '0' : @product.discount%>" data-user="<%= @product.user_id %>" href="javascript: void(0)">Добавить в корзину</a>
+      </div>
+  <% end %>
+
+  <% if(is_admin? || (current_user && current_user.id == @product.user_id)) %>
+      <div class="admin-links">
+          <%= link_to 'Редактировать', edit_category_product_path(@product.category,@product) %>
+      </div>
+  <% end %>
+
+</div>

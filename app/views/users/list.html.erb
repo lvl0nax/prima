@@ -1,0 +1,34 @@
+<div class="box box-usual">
+
+    <h1>Список пользователей</h1>
+
+    <% @usersObj.each do |u|%>
+
+        <div class="plant">
+            <%=User::ROLES[u[0].to_i] %>
+        </div>
+
+        <% u[1].each do |user|%>
+            <ul class="list-users">
+                <li>
+                    <% if(current_user != user) %>
+                    <div class="fl-r">
+                        <%= link_to 'Удалить', user, :confirm => 'Are you sure?', :method => :delete %>
+                    </div>
+                    <% end %>
+                    <a class="list-user-link" href="/profile/<%= user.id%>"><%= (user.role.to_i == 3 || user.role.to_i == 4) ? user.company_name : user.name%></a>
+                    <% if (!user.orders.blank?) %>
+                        <% total_price = 0 %>
+                        <% user.orders.each do |o| %>
+                          <% total_price += o.total.to_f%>
+                        <% end %>
+                        (сделал заказов на <%= total_price%>)
+                    <% else %>
+                        (заказов пока не было)
+                    <% end %>
+                </li>
+            </ul>
+        <% end %>
+
+    <% end%>
+</div>

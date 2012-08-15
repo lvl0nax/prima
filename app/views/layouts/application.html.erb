@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title><%= title%></title>
+    <%= yield :meta %>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <%= stylesheet_link_tag    "common" %>
+    <%= yield :css %>
+    <%= javascript_include_tag "jq" %>
+    <!--[if lte IE 7]>
+    <%= javascript_include_tag "json2" %>
+    <![endif]-->
+    <%= javascript_include_tag "rails" %>
+    <%= javascript_include_tag "script" %>
+    <script type="text/javascript">
+        <% if current_user %>
+            current_user = {
+                id: <%= current_user.id %>,
+                name: '<%= current_user.name %>',
+                role: <%= current_user.role%>
+            };
+        <% else %>
+            current_user = false;
+        <% end %>
+    </script>
+    <%= yield :js %>
+    <%= csrf_meta_tags %>
+</head>
+
+<body onresize="w.resize()">
+    <div id="container">
+
+        <div class="content-top">
+            <div class="card empty">
+                <span class="card-title"><span id="card-chekout">Корзина пуста</span></span>
+                <div id="card-wrapper"></div>
+                <div class="links">
+                    <a class="fl-r" href="javascript: void(0)" onclick="card.emptyCard()">Очистить корзину</a>
+                    <a href="<%= new_order_path %>">Оформить заказ</a>
+                </div>
+            </div>
+            <div class="login-links">
+                <% if(!current_user) %>
+                    <a href="javascript:void(0)" onclick="w.session.popup()">Войти</a>
+                    <a href="/users/new" class="last">Регистрация</a>
+                <% else %>
+                    <%= link_to "Личный кабинет", "/profile"%>
+                    <a href="javascript: void(0)" id="logout" class="last">Выйти</a>
+                <% end %>
+            </div>
+            <a href="/" id="logo">
+                <img src="/assets/logo_norm.png" alt="">
+            </a>
+        </div>
+        <div id="content-body">
+            <ul class="navigation nclear">
+                
+
+                <% if(!all_pages.blank?) %>
+
+                    <% first_page = all_pages.first %>
+                    <li><%= link_to first_page.title, page_path(first_page)%></li>
+                    <li><%= link_to "Заказать online", categories_path%></li>
+
+                    <% all_pages.each do |p| %>
+                        <% if(p != first_page) %>
+                            <li><%= link_to p.title, page_path(p)%></li>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            </ul>
+            <% if(!banner_pack.blank?) %>
+            <% count_b = 0 %>
+            <% init_b = 0 %>
+            <% banner_pack.each do |banner_temp| %>
+                <% if banner_temp.position == 0 ||  banner_temp.position == 1 %>
+                    <% if init_b == 0 %>
+                        <div class="banner-top-wrap">
+                        <% init_b = 1 %>
+                    <% end %>
+                    <a class="banner-top <%= count_b > 0 ? 'h' : ''%>" href="<%= banner_temp.url%>" style="background-image: url(<%= banner_temp.img_banner_url(:top).to_s%>)">
+                        <img src="<%= banner_temp.img_banner_url(:top).to_s%>" alt="<%= banner_temp.title%>">
+                        <% if !banner_temp.description.blank? %>
+                            <span class="banner-desc"><%= banner_temp.description%></span>
+                        <% end %>
+                    </a>
+
+                    <% count_b += 1 %>
+                <% end %>
+            <% end %>
+            <a class="banner-top-online" href="/categories"></a>
+            <% if count_b > 0 %>
+                </div>
+            <% end %>
+            <script type="text/javascript">w.banner.init()</script>
+            <% end %>
+
+            <div class="nclear nclear-withmarg">
+                <div class="content-left">
+                    <%= render :template => "layouts/side-menu.html.erb"%>
+
+                    <% if(!banner_pack.blank? && params[:controller] != "pages") %>
+                        <% count_b = 0 %>
+                        <% banner_pack.each do |banner_temp| %>
+                            <% if banner_temp.position == 2 || banner_temp.position == 0 %>
+                              <div class="banner-mini">
+                                <a class="banner-mini-item" href="<%= banner_temp.url%>" style="background-image: url(<%= banner_temp.img_banner_url(:left).to_s%>)"><img src="<%= banner_temp.img_banner_url(:left).to_s%>" alt="<%= banner_temp.title%>"></a>
+                              </div>
+                                <% break %>
+                            <% end %>
+                        <% end %>
+                    <% end %>
+                </div>
+                <div class="content-right">
+                    <% if( params[:controller] == "pages") %>
+                        <% if(!banner_pack.blank?)%>
+                            <% count_b_m = 0 %>
+                            <div class="banner-mini">
+                            <% banner_pack.each do |banner_temp| %>
+                                <% if banner_temp.position == 2 || banner_temp.position == 0 %>
+                                        <a class="banner-mini-item" href="<%= banner_temp.url%>" style="background-image: url(<%= banner_temp.img_banner_url(:mini).to_s%>)"><img src="<%= banner_temp.img_banner_url(:mini).to_s%>" alt="<%= banner_temp.title%>"></a>
+                                    <% count_b_m += 1 %>
+                                <% end %>
+                                <% count_b_m == 3 ? break : nil %>
+                            <% end %>
+                            </div>
+                        <% end %>
+                        <div class="content-box">
+                            <i class="partners-text"></i>
+                            <img src="/assets/partners.jpg" alt="" class="partners-img">
+                        </div>
+                    <% end %>
+                    <% if( params[:controller] != "pages") %>
+                        <%= yield %>
+                    <% end %>
+                </div>
+            </div>
+
+            <% if( params[:controller] == "pages") %>
+            <div class="main-content">
+                <%= yield %>
+            </div>
+            <% end %>
+
+        </div>
+        <div id="content-footer">
+            <div class="footer-line"></div>
+            <div class="social-block">
+                <a class="social-icon social-icon-twitter" href="/vk.com"></a>
+                <a class="social-icon social-icon-vk" href="/vk.com"></a>
+                Следуйте за нами
+            </div>
+            <div class="copyright-block">
+                <img src="/assets/logo.png" alt="Water Boom">
+
+                <div>
+                    © 2012. Все права защищены
+                </div>
+            </div>
+            <ul class="footer-pages">
+                
+                <% if(!all_pages.blank?) %>
+                    <% first_page = all_pages.first %>
+                    <li><%= link_to first_page.title, page_path(first_page)%></li>
+                    <li><%= link_to "Заказать online", categories_path%></li>
+
+
+                    <% all_pages.each do |p| %>
+                        <% if(p != first_page) %>
+                            <li><%= link_to p.title, page_path(p)%></li>
+                        <% end %>
+                    <% end %>
+                <% end %>
+            </ul>
+
+            <% if(all_categories) %>
+                <ul class="footer-categories">
+                    <% count_cat = 1%>
+                    <% all_categories.each do |c| %>
+                        <li>
+                          <a href="<%= category_path(c)%>"><i></i><%= c.name%></a>
+                        </li>
+                        <% count_cat += 1%>
+                        <% if count_cat == 5 %>
+                            </ul>
+                            <ul class="footer-categories">
+                        <% end %>
+                    <% end %>
+                </ul>
+            <% end %>
+        </div>
+        <div class="footer-shadow"></div>
+        <div id="overlay"></div>
+        <div id="popup-wrap"><div class="popup-top"></div><div class="popup-content"></div></div>
+    </div>
+</body>
+</html>

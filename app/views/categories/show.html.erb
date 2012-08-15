@@ -1,0 +1,180 @@
+<% content_for :js do %>
+    <%= javascript_include_tag "search" %>
+<% end %>
+
+<% content_for :meta do %>
+    <meta name="description" content="<%= @category.desccat %>" />
+    <meta name="keywords" content="<%= @category.keywords%>" />
+<% end %>
+
+<!-- <input id="searcher" type="text" class='searcher-input input-empty' onkeydown="if(event.keyCode == 13) { search.searchByName($(this)) }">-->
+<!-- <h1><%= @category.name %></h1>-->
+
+<% if(false && !@category.description.blank?) %>
+    <div class="category-description"><%= raw @category.description %></div>
+<% end %>
+
+<% if(!@cat_filters.blank?) %>
+    <div class="filter-block ov-h">
+      <%
+         count_main = 0
+         count_second = 0
+      %>
+          <div class="filter-line"><span>Фильтры</span></div>
+          <div id="main-filter-group"></div>
+          <div class="filter-line"></div>
+          <div id="no-main-filter-group" class="h"></div>
+
+          <div class="invisible" style="display: none">
+              <% @cat_filters.each do |filter|%>
+                  <div class="filter-item <%=  filter.main_flag == false ? 'no-main-filter' : 'main-filter' %>">
+                    <div class="filter-name"><%= filter.name%></div>
+                    <div class="filter-values" rel="<%= filter.id%>">
+                        <% filter.values.split("&").each do |value|%>
+                          <span class="btn" rel="<%= value.split(")*")[0]%>"><%= value.split(")*")[1]%></span>
+                        <% end %>
+                     </div>
+                  </div>
+                  <%  filter.main_flag == true ? count_main += 1 : count_second += 1%>
+              <% end %>
+          </div>
+
+          <% if count_main > 0 && count_second > 0 %>
+              <script type="text/javascript">
+                $(document).ready(function(){
+                    $(".main-filter").each(function(){
+                        $("#main-filter-group").append($(this));
+                    });
+                    $(".no-main-filter").each(function(){
+                        $("#no-main-filter-group").append($(this));
+                    });
+                    $(".invisible").remove();
+                })
+              </script>
+              <div class="filter-bottom">
+                <a onclick="$('#no-main-filter-group').toggleClass('h')" href="javascript:">Развернуть фильтры</a>
+              </div>
+          <% elsif count_main == 0 && count_second > 0%>
+              <script type="text/javascript">
+                $(document).ready(function(){
+                    $(".no-main-filter").each(function(index){
+                        $("#main-filter-group").append($(this));
+                    });
+                    $("#no-main-filter-group").remove();
+                    $(".invisible").remove();
+                })
+              </script>
+          <% elsif count_main >0 && count_second == 0%>
+              <script type="text/javascript">
+                $(document).ready(function(){
+                    $(".main-filter").each(function(index){
+                        $("#main-filter-group").append($(this));
+                    });
+                    $("#no-main-filter-group").remove();
+                    $(".invisible").remove();
+                })
+              </script>
+          <% end %>
+    </div>
+<% end %>
+
+<div class="box sorting-box">
+    <span class="sorting-title">Сортировка</span>
+    <span onclick='search.sort("price", 1)' class="btn">По цене</span>
+    <span href="javascript: void(0)" onclick="search.sort('brand', 0, 1)" class="btn">По производителю</span>
+</div>
+
+<div class="admin-links">
+    <% if(is_admin?) %>
+        <%= link_to 'Редактировать категорию', edit_category_path(@category), { :class => "btn btn-blue" } %>
+    <% end %>
+    <% if(is_urik_post? || is_admin?) %>
+        <%= link_to 'Добавить продукт', new_category_product_path(@category), { :class => "btn btn-blue" } %>
+    <% end %>
+</div>
+<div class="box-category">
+  <% if(!@category.products.blank?) %>
+    <% @category.products.each do |p| %>
+        <div class="box box-product">
+            <div class="box-product-info">
+                <div class="box-product-price"><%= p.value_price + "руб.-"%></div>
+                <div class="added-block">
+                    <span class="added-block-title">Кол-во</span>
+                    <input type="text" value="1" id="product_<%= p.id%>" class="added-block-input">
+                    <a class="btn-add add-to-order" href=""><span>+</span>В корзину</a>
+                </div>
+                <div class="box-product-title">
+                    <a href="<%= product_path(p) %>">
+                        <%= p.title%>
+                        <span class="box-product-img" style="background-image: url(<%= p.img_product_url(:thumb).to_s%>)"></span>
+                    </a>
+                </div>
+
+                <div class="product-info-item">
+                    <div class="product-info-label">Товар категории:</div>
+                    <div class="product-info-data"><%= @category.name %></div>
+                </div>
+                <div class="product-info-item">
+                    <div class="product-info-label">Производитель:</div>
+                    <div class="product-info-data"><%= p.brand%></div>
+                </div>
+                <div class="product-info-item">
+                    <div class="product-info-label">Поставщик:</div>
+                    <div class="product-info-data">Вода (5 - 19 литров)</div>
+                </div>
+                <% if(!p.arr_val.blank?) %>
+                  <div class="product-filters">
+                      <% p.arr_val.each do |fil| %>
+                          <% filter = @filter_obj[fil[0].to_i] %>
+                          <% if !filter.blank? %>
+                            <span class="btn btn-<%=(rand(3)+1)%>"><%= filter[fil[1]]%></span>
+                          <% end %>
+                      <% end %>
+                  </div>
+                <% end %>
+              <div class="product-desc">
+                <%= raw p.description%>
+              </div>
+            </div>
+        </div>
+    <% end %>
+  <% end %>
+</div>
+<script type="text/javascript">
+
+    $(function(){
+        var searcher = $('#searcher'), searchStr = "Поиск по названию";
+
+        searcher.focus(function(){ focusInput(searchStr, $(this)) });
+        searcher.blur(function(){ checkInput(searchStr, $(this)) });
+
+        searcher.val(searchStr).addClass("input-empty");
+
+        search.prod = {
+            <% @category.products.each do |p| %>
+                <%= p.id%> : {
+                title: "<%= p.title%>",
+                price: "<%= p.value_price%>",
+                img: "<%= p.img_product_url(:thumb).to_s %>",
+                desc: "<%= escape_javascript(raw p.description)%>",
+                brand: "<%= escape_javascript(raw p.brand)%>",
+                user: "<%= p.user_id%>",
+                status: "<%= p.status%>",
+                category: "<%= escape_javascript(p.category.name)%>",
+                filter_html: "<% if(!p.arr_val.blank?) %> <div class='product-filters'> <% p.arr_val.each do |fil| %> <% filter = @filter_obj[fil[0].to_i] %> <% if !filter.blank? %> <span class='btn btn-<%=(rand(3)+1)%>'><%= filter[fil[1]]%></span> <% end %> <% end %> </div> <% end %>",
+                discount: "<%=raw p.discount.blank? ? '0' : p.discount%>",
+                filter: {
+                    <% if(!p.filters.blank?) %>
+                        <% p.filters.split("&").each do |sp|%>
+                            <%= sp.split("-")[0]%> : <%= sp.split("-")[1]%> <%= sp == p.filters.split("&").last ? "" : ","%>
+                        <% end %>
+                    <% end %>
+                }
+            } <%= p == @category.products.last ? "" : "," %>
+            <% end %>
+        };
+
+        search.init();
+
+    });
+</script>

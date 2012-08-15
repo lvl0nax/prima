@@ -1,0 +1,63 @@
+<% content_for :css do %>
+    <%= stylesheet_link_tag    "redactor/css/redactor.css" %>
+<% end %>
+<% content_for :js do %>
+    <%= javascript_include_tag 'redactor/redactor.js'%>
+<% end %>
+
+<%= form_for(@page, :html => {:class => "app-form", :onsubmit => "return pageFormSubmit()"}) do |f| %>
+
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Заголовок" %></div>
+      <div class="form-data"><%= f.text_field :title , :class => "input-text"%></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Содержание страницы" %></div>
+      <div class="form-data" style="overflow: hidden"></div>
+      <%= f.text_area :description , :class => "input-textarea"%>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Заголовок для seo" %></div>
+      <div class="form-data"><%= f.text_field :search_title, :class => "input-text" %></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Ключевые слова" %></div>
+      <div class="form-data"><%= f.text_field :keywords, :class => "input-text" %></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Краткое описание" %></div>
+      <div class="form-data"><%= f.text_field :descpage, :class => "input-text"%></div>
+  </div>
+  <div class="form-field">
+      <div class="form-data"><%= f.submit(:value => @label_btn) %></div>
+  </div>
+<% end %>
+
+<script type="text/javascript">
+	var redactor;
+	$(document).ready(
+		function()
+		{
+			redactor = $('#page_description').redactor({css: ["blank.css"]});
+		}
+	);
+    var pageFormSubmit = function(){
+
+        var page_titleO = $("#page_title"),
+            page_titleV = page_titleO.val(),
+                error_mess = "", error_flag = null;
+
+        $(".app-form .form-field").removeClass("fail");
+
+        if(page_titleV.length < 1){
+            page_titleO.parent().parent().addClass("fail")
+            error_mess += "- Заголовок страницы<br/>";
+            error_flag = 1;
+        }
+
+        if(error_flag){
+            w.notify.show("Проверьте форму, не указаны: <br/>" + error_mess, 3000);
+            return false;
+        }
+    };
+</script>

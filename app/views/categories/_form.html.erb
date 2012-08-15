@@ -1,0 +1,89 @@
+<%= form_for(@category, :html=> {:class => "app-form ov-h", :onsubmit => "return cat.submitForm()"}) do |f| %>
+  <% if @category.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@category.errors.count, "error") %> prohibited this category from being saved:</h2>
+
+      <ul>
+      <% @category.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Название" %></div>
+      <div class="form-data"><%= f.text_field :name, :class => "input-text" %></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Краткое описание" %></div>
+      <div class="form-data"><%= f.text_area :description , :class => "input-textarea"%></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Заголовок для seo" %></div>
+      <div class="form-data"><%= f.text_field :search_title, :class => "input-text" %></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Данные для description" %></div>
+      <div class="form-data"><%= f.text_field :desccat, :class => "input-text" %></div>
+  </div>
+  <div class="form-field">
+      <div class="form-label"><%= f.label "Данные для keywords" %></div>
+      <div class="form-data"><%= f.text_field :keywords, :class => "input-text" %></div>
+  </div>
+    <div class="form-field">
+      <div class="form-label">Фильтры:</div>
+      <div class="form-data">
+        <div class="h"><%= f.text_field :filters, :class => "input-text" %></div>
+        <% @filters.each do |filter| %>
+            <span class="filter-id btn <%= @cat_filters.include?(filter.id.to_s) ? 'btn-blue' : '' %>" rel="<%= filter.id%>" onclick="cat.checkFilter($(this))" style="margin: 0 0 5px"><%= filter.name%></span>
+        <% end %>
+      </div>
+    </div>
+  <div class="form-field">
+      <div class="form-data"><%= f.submit(:value => @label_btn) %></div>
+  </div>
+<% end %>
+<script type="text/javascript">
+
+    var cat = function(t){
+        t.fId = [];
+
+        t.init = function(){
+            <% @cat_filters.each do |c| %>
+                t.fId.push(c)
+            <% end %>
+        };
+
+        t.checkFilter = function(el){
+            el.toggleClass("btn-blue");
+            t.fId = [];
+            $(".filter-id").each(function(){
+                if($(this).hasClass("btn-blue")){
+                    t.fId.push($(this).attr("rel"));
+                }
+            })
+            $("#category_filters").val(t.fId.join("&"));
+        };
+
+        t.submitForm = function(){
+            var category_nameO = $("#category_name"),
+                category_nameV = category_nameO.val(),
+                    error_mess = "", error_flag = null;
+
+            $(".app-form .form-field").removeClass("fail");
+
+            if(category_nameV.length < 1){
+                category_nameO.parent().parent().addClass("fail")
+                error_mess += "- Название Категории<br/>";
+                error_flag = 1;
+            }
+
+            if(error_flag){
+                w.notify.show("Проверьте форму, не указаны: <br/>" + error_mess, 3000);
+                return false;
+            }
+        }
+        return t;
+    }({})
+</script>

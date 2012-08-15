@@ -1,0 +1,97 @@
+<div class="box box-usual">
+    <h1> Заказ с id = <%= @order.id %></h1>
+    <ul class="info-order">
+        <li>
+            <div class="info-order-label">Сформированный заказ:</div>
+            <div class="info-order-data">
+              <% @products.each do |p| %>
+                  <%= p.title + " (" + p.count + ")" %> <br>
+              <% end %>
+            </div>
+        </li>
+        <% if(!@userTo.blank?)%>
+        <li>
+            <div class="info-order-label">От кого:</div>
+            <div class="info-order-data">
+                <a href="/profile/<%= @userTo.id%>"><%= (@userTo.role.to_i == 1 || @userTo.role.to_i == 2) ? @userTo.name : @userTo.company_name%></a>
+            </div>
+        </li>
+        <% end %>
+        <li>
+            <div class="info-order-label">Контактное лицо:</div>
+            <div class="info-order-data">
+                <%= @order.name %>
+            </div>
+        </li>
+        <li>
+            <div class="info-order-label">Контактный телефон:</div>
+            <div class="info-order-data">
+                <%= @order.phone %>
+            </div>
+        </li>
+        <li>
+            <div class="info-order-label">Контактный email:</div>
+            <div class="info-order-data">
+              <%= !@order.email.blank? ? @order.email: "не указан"%>
+            </div>
+        </li>
+        <li>
+            <div class="info-order-label">Адрес доставки:</div>
+            <div class="info-order-data">
+                <%= !@order.address.blank? ? @order.address : "не указан"%>
+            </div>
+        </li>
+        <li>
+            <div class="info-order-label">Итоговая сумма:</div>
+            <div class="info-order-data">
+                <%= @order.total %>
+            </div>
+        </li>
+        <% if !@order.date.blank? %>
+        <li>
+            <div class="info-order-label">Время для связи:</div>
+            <div class="info-order-data">
+                <%= @order.date %>
+            </div>
+        </li>
+        <% end %>
+        <li>
+            <div class="info-order-label">Состояние: </div>
+            <div class="info-order-data">
+                <% if current_user == @user %>
+                    <select onchange="change_status(<%= @order.id%>, $(this))">
+                        <% Order::STATUS.each_index do |key|%>
+                            <option value="<%= key %>" <%= @order.status.to_i == key ? ("selected='selected'") : ""%>><%= Order::STATUS[key.to_i]%></option>
+                        <% end %>
+                    </select>
+                <% else %>
+                    <%= Order::STATUS[@order.status]%>
+                <% end %>
+            </div>
+        </li>
+    </ul>
+    <div class="info-order h">
+        <div class="info-order-data">
+            <a class="btn btn-blue" href="javascript: void(0)" id="btn-saver">Сохранить</a>
+        </div>
+    </div>
+    <% if current_user == @user %>
+        <script type="text/javascript">
+            var change_status = function(id, el){
+                var status = el.val();
+                $("#btn-saver").parent().parent().show();
+                $("#btn-saver").click(function(){
+                    $("#btn-saver").parent().parent().hide();
+
+                    $.post('/orders/change_status', {ajax: 1, id: id, status: status}, function(resp){
+                        if(resp.status == 1){
+                            w.popup.alert("Статус заказа успешно сохранён")
+                        } else {
+                            w.popup.alert("Что-то пошло не так, попробуйте перезагрузить страницу")
+                        }
+                    })
+                })
+            }
+        </script>
+    <% end %>
+</div>
