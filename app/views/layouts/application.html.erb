@@ -16,9 +16,9 @@
     <script type="text/javascript">
         <% if current_user %>
             current_user = {
-                id: <%= current_user.id %>,
+                id: <%= @current_user.id %>,
                 name: '<%= current_user.name %>',
-                role: <%= current_user.role%>
+                role: <%= current_user.role %>
             };
         <% else %>
             current_user = false;
@@ -50,10 +50,15 @@
                 <% end %>
             </div>
             <a href="/" id="logo">
-                <img src="/assets/logo_norm.png" alt="">
+                <img src="/assets/logo.png" alt="">
             </a>
+            <div class="top-menu">
+
+            </div>
         </div>
         <div id="content-body">
+
+            <div class="banner"></div>
             <ul class="navigation nclear">
                 
 
@@ -145,52 +150,30 @@
 
         </div>
         <div id="content-footer">
-            <div class="footer-line"></div>
-            <div class="social-block">
-                <a class="social-icon social-icon-twitter" href="/vk.com"></a>
-                <a class="social-icon social-icon-vk" href="/vk.com"></a>
-                Следуйте за нами
+          <div class="ads-blocks">
+            <div class="block">
+              <img src="/assets/first.png" class="first-ban-img">
             </div>
-            <div class="copyright-block">
-                <img src="/assets/logo.png" alt="Water Boom">
-
-                <div>
-                    © 2012. Все права защищены
-                </div>
+            <div class="block leftmg">
+              <img src="/assets/second.png" class="second-ban-img">
             </div>
-            <ul class="footer-pages">
-                
-                <% if(!all_pages.blank?) %>
-                    <% first_page = all_pages.first %>
-                    <li><%= link_to first_page.title, page_path(first_page)%></li>
-                    <li><%= link_to "Заказать online", categories_path%></li>
+            <div class="block leftmg">
+              <img src="/assets/third.png" class="third-ban-img">
+            </div>
+          </div>
 
-
-                    <% all_pages.each do |p| %>
-                        <% if(p != first_page) %>
-                            <li><%= link_to p.title, page_path(p)%></li>
-                        <% end %>
-                    <% end %>
-                <% end %>
-            </ul>
-
-            <% if(all_categories) %>
-                <ul class="footer-categories">
-                    <% count_cat = 1%>
-                    <% all_categories.each do |c| %>
-                        <li>
-                          <a href="<%= category_path(c)%>"><i></i><%= c.name%></a>
-                        </li>
-                        <% count_cat += 1%>
-                        <% if count_cat == 5 %>
-                            </ul>
-                            <ul class="footer-categories">
-                        <% end %>
-                    <% end %>
-                </ul>
-            <% end %>
+          <div class="bottom-menu">
+            BOTTOM 
+            MENU
+          </div>
+            
+          <div class="copyright-block">
+              <div>
+                  © 2012. Все права защищены
+              </div>
+          </div>
         </div>
-        <div class="footer-shadow"></div>
+        <div class="footer-shadow2"></div>
         <div id="overlay"></div>
         <div id="popup-wrap"><div class="popup-top"></div><div class="popup-content"></div></div>
     </div>

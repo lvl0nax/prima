@@ -9,21 +9,21 @@ class SessionsController < ApplicationController
 
   def create_session
     user = User.find_by_email(params[:email])
-
+    logger.debug "============================ login ================================"
     if (user && user.has_pass?(params[:password]))
-
+      logger.debug "============================ user found ================================"
       sign_in(user)
-
+      logger.debug "============================ sing in method has completed ================================"
       respond_to do |format|
         format.json {
           render :json => { :res => '1', :user => user }
         }
       end
-
+      logger.debug "============================ session should be created ================================"
     else
-
+      logger.debug "============================ user found, but something wrong ================================"
       if (user)
-
+        logger.debug "============================ password is inorrect ================================"
         respond_to do |format|
           format.json {
             render :json => { :res => '0', :error => "Неверный пароль, проверьте раскладку клавиатуры" }
@@ -31,7 +31,7 @@ class SessionsController < ApplicationController
         end
 
       else
-
+        logger.debug "============================ user not found ================================"
         respond_to do |format|
           format.json {
             render :json => { :res => '0', :error => "Пользователь с таким e-mail не зарегистрирован" }

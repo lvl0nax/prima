@@ -19,6 +19,7 @@ class User < ActiveRecord::Base
     }
 
     def self.authenticate( id, pass )
+        logger.debug "============================ user authenticate method ================================"
         user = find_by_id(id.to_s)
         (user && user.enc_pass == pass.to_s) ? user : nil
     end

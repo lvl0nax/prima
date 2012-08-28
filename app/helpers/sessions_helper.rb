@@ -8,6 +8,8 @@ module SessionsHelper
   end
 
   def current_user
+    logger.debug "*********** current_user method ******************"
+    logger.debug "*********** current_user=#{@current_user} ******************"
     @current_user ||= user_from_remember
   end
 
@@ -34,14 +36,18 @@ module SessionsHelper
   private
 
     def user_from_remember
+      logger.debug "============================ user_from_remember method ================================"
       User.authenticate(remember_id, remember_pass)
+      #logger.debug "============================ #{remember_id} - #{remember_pass} ================================"
     end
 
     def remember_id
+      logger.debug "============================ remember_id method ================================"
       cookies.signed[:id] || [nil]
     end
 
     def remember_pass
+      logger.debug "============================ remember_pass ================================"
       cookies.signed[:salt] || [nil]
     end
 
