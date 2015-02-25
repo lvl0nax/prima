@@ -5,25 +5,14 @@
     <title><%= title%></title>
     <%= yield :meta %>
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-    <%= stylesheet_link_tag    "common" %>
+    <%= stylesheet_link_tag 'common' %>
     <%= yield :css %>
     <%= javascript_include_tag "jq" %>
     <!--[if lte IE 7]>
-    <%= javascript_include_tag "json2" %>
+    <%= javascript_include_tag 'json2' %>
     <![endif]-->
-    <%= javascript_include_tag "rails" %>
-    <%= javascript_include_tag "script" %>
-    <script type="text/javascript">
-        <% if current_user %>
-            current_user = {
-                id: <%= current_user.id %>,
-                name: '<%= current_user.name %>',
-                role: <%= current_user.role%>
-            };
-        <% else %>
-            current_user = false;
-        <% end %>
-    </script>
+    <%= javascript_include_tag 'rails' %>
+    <%= javascript_include_tag 'script' %>
     <%= yield :js %>
     <%= csrf_meta_tags %>
 </head>
@@ -42,8 +31,8 @@
             </div>
             <div class="login-links">
                 <% if(!current_user) %>
-                    <a href="javascript:void(0)" onclick="w.session.popup()">Войти</a>
-                    <a href="/users/new" class="last">Регистрация</a>
+                    <a href="/users/sign_in" >Войти</a>
+                    <a href="/users/sign_up" class="last">Регистрация</a>
                 <% else %>
                     <%= link_to "Личный кабинет", "/profile"%>
                     <a href="javascript: void(0)" id="logout" class="last">Выйти</a>

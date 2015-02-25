@@ -1,6 +1,7 @@
 # -*- encoding : utf-8 -*-
 Marketwater::Application.routes.draw do
 
+  devise_for :users
   resources :filters do
     collection do
       post "create_filter"
@@ -31,15 +32,6 @@ Marketwater::Application.routes.draw do
 
   resources :pages
 
-  resources :sessions do
-    collection do
-      post "create_session"
-      post "destroy_session"
-      post "template_login"
-      post "template_recover"
-    end
-  end
-
   resources :users do
     collection do
       get "profile"
@@ -56,10 +48,8 @@ Marketwater::Application.routes.draw do
 
   root :to => 'pages#index'
 
-  match '/profile',  :to => 'users#profile'
-  match '/profile/:id',  :to => 'users#profile'
-  match '/login',  :to => 'sessions#index'
-  match '/logout',  :to => 'sessions#destroy_session'
+  get '/profile',  :to => 'users#profile'
+  get '/profile/:id',  :to => 'users#profile'
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

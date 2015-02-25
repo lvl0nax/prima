@@ -1,36 +1,38 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.3'
+gem 'rails', '4.2'
 
 # Bundle edge Rails instead:
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
-gem 'mysql'
+gem 'pg'
+gem 'json'
+
 gem 'execjs'
 gem 'therubyracer'
-gem 'json'
 
 gem 'carrierwave'
 gem 'rmagick'
 gem 'mini_magick'
-gem 'tlsmail'
 
+gem 'devise'
+
+gem 'haml-rails'
+gem 'haml'
 # Gems used only for assets and not required
 # in production environments by default.
 
-group :assets do
-  gem 'sass-rails',   '~> 3.1.5'
-  gem 'coffee-rails', '~> 3.1.1'
-  gem 'uglifier', '>= 1.0.3'
-end
+gem 'sass-rails'
+gem 'coffee-rails'
+gem 'uglifier'
 
 gem 'jquery-rails'
 
 # SMS - delivering  
-gem 'whenever', :require => false
+gem 'whenever', require: false
 gem 'sms24x7'
 
-gem 'curb', '~> 0.8.0'
+gem 'curb'
 
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'

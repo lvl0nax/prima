@@ -1,87 +1,87 @@
-<%= form_for(@user, :html => {:multipart =>true, :class=> "app-form ov-h", :onsubmit => "return regO.checkingForm()"}) do |f| %>
-
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), :html => {:multipart =>true, :class=> "app-form ov-h", :onsubmit => "return regO.checkingForm()", style: 'background-color: white;'}) do |f| %>
+    <%= devise_error_messages! %>
     <div class="form-field">
-        <div class="form-label"><%= f.label "Кем вы являетесь" %></div>
-        <div class="form-data">
-            <select name="user[role]" id="user_role">
-                <% User::ROLES.each do |i| %>
-                    <% if (@users.nil? || i[0] != 1 || is_admin?) %>
-                        <option value="<%= i[0]%>" <%= ( !@user.id.blank? && @user.role.to_i == i[0] ) ? "selected='selected'" : ""%>><%= i[1]%></option>
-                    <% else %>
-                    <% end %>
-                <% end %>
-            </select>
-        </div>
+      <div class="form-label"><%= f.label "Кем вы являетесь" %></div>
+      <div class="form-data">
+        <select name="user[role]" id="user_role">
+          <% User::ROLES.each do |i| %>
+              <% if (@users.nil? || i[0] != 1 || is_admin?) %>
+                  <option value="<%= i[0]%>" <%= ( !@user.id.blank? && @user.role.to_i == i[0] ) ? "selected='selected'" : ""%>><%= i[1]%></option>
+              <% else %>
+              <% end %>
+          <% end %>
+        </select>
+      </div>
     </div>
-  <div class="form-field">
+    <div class="form-field">
       <div class="form-label"><%= f.label "ФИО" %></div>
       <div class="form-data"><%= f.text_field :name, :class => "input-text" %></div>
-  </div>
-  <div class="form-field">
+    </div>
+    <div class="form-field">
       <div class="form-label"><%= f.label "E-mail" %></div>
       <div class="form-data"><%= f.text_field :email, :class => "input-text" %></div>
       <div class="form-helper form-data">формат записи:  example@example.com</div>
-  </div>
-<% if @user.id.blank? %>
-  <div class="form-field">
-      <div class="form-label"><%= f.label "Пароль" %></div>
-      <div class="form-data"><%= f.text_field :password, :class => "input-text" %></div>
-  </div>
-<% end %>
-  <div class="form-field hidden">
+    </div>
+    <% if @user.id.blank? %>
+        <div class="form-field">
+          <div class="form-label"><%= f.label "Пароль" %></div>
+          <div class="form-data"><%= f.text_field :password, :class => "input-text" %></div>
+        </div>
+    <% end %>
+    <div class="form-field hidden">
       <div class="form-label"><%= f.label "День рождения" %></div>
       <div class="form-data"><%= f.text_field :bday, :class => "input-text" %></div>
-  </div>
-  <div class="form-field" style="display: none">
+    </div>
+    <div class="form-field" style="display: none">
       <div class="form-label"><%= f.label "Название компании" %></div>
       <div class="form-data"><%= f.text_field :company_name, :class => "input-text" %></div>
-  </div>
-  <div class="form-field">
+    </div>
+    <div class="form-field">
       <div class="form-label"><%= f.label "Ваша фотография" %></div>
       <div class="form-data"><%= f.file_field :img %></div>
-  </div>
-  <div class="form-field" style="display: none">
+    </div>
+    <div class="form-field" style="display: none">
       <div class="form-label"><%= f.label "ФИО контактного лица" %></div>
       <div class="form-data"><%= f.text_field :contact_fio, :class => "input-text" %></div>
-  </div>
-  <div class="form-field" style="display: none">
+    </div>
+    <div class="form-field" style="display: none">
       <div class="form-label"><%= f.label "Сумма минимального заказа" %></div>
       <div class="form-data"><%= f.text_field :minimal_price, :class => "input-text" %></div>
-  </div>
-  <div class="form-field">
+    </div>
+    <div class="form-field">
       <div class="form-label"><%= f.label "Контактный телефон" %></div>
       <div class="form-data"><%= f.text_field :phone, :class => "input-text" %></div>
       <div class="form-helper form-data">формат записи:  +7 900 0000000</div>
-  </div>
-  <div class="form-field">
+    </div>
+    <div class="form-field">
       <div class="form-label"><%= f.label "Немного о себе" %></div>
       <div class="form-data"><%= f.text_area :about, :class => "input-textarea" %></div>
-  </div>
-  <div class="form-field-btn" style="display: block!important;">
+    </div>
+    <div class="form-field-btn" style="display: block!important;">
       <div class="form-data"><%= f.submit(:value => @label_btn) %></div>
-  </div>
+    </div>
 <% end %>
 
 <script type="text/javascript">
     var regO = (function(t){
 
         var user_roleO = $("#user_role"),
-            user_emailO = $("#user_email"),
-            user_nameO = $("#user_name"),
-            user_passwordO = $("#user_password"),
-            user_imgO = $("#user_img"),
-            user_phoneO = $("#user_phone"),
-            user_aboutO = $("#user_about"),
-            user_contact_fioO = $("#user_contact_fio"),
-            user_company_nameO = $("#user_company_name");
-            user_minimal_priceO = $("#user_minimal_price");
+                user_emailO = $("#user_email"),
+                user_nameO = $("#user_name"),
+                user_passwordO = $("#user_password"),
+                user_imgO = $("#user_img"),
+                user_phoneO = $("#user_phone"),
+                user_aboutO = $("#user_about"),
+                user_contact_fioO = $("#user_contact_fio"),
+                user_company_nameO = $("#user_company_name");
+        user_minimal_priceO = $("#user_minimal_price");
 
-            var flag_role = 1; /*1 - admin, fizik; 2 - urik*/
+        var flag_role = 1; /*1 - admin, fizik; 2 - urik*/
 
         t.init = function(){
 
             t.fizikO = [user_roleO , user_emailO, user_nameO, user_passwordO, user_imgO, user_phoneO, user_aboutO],
-            t.urikO = [user_roleO , user_emailO, user_passwordO, user_imgO, user_phoneO, user_aboutO, user_contact_fioO, user_company_nameO, user_minimal_priceO];
+                    t.urikO = [user_roleO , user_emailO, user_passwordO, user_imgO, user_phoneO, user_aboutO, user_contact_fioO, user_company_nameO, user_minimal_priceO];
 
             t.checkFlag();
 
@@ -125,15 +125,15 @@
         t.checkingForm = function(){
 
             var user_roleV = user_roleO.val(),
-            user_emailV = user_emailO.val(),
-            user_nameV = user_nameO.val(),
-            user_passwordV = user_passwordO.val(),
-            user_imgV = user_imgO.val(),
-            user_phoneV = user_phoneO.val(),
-            user_aboutV = user_aboutO.val(),
-            user_contact_fioV = user_contact_fioO.val(),
-            user_company_nameV = user_company_nameO.val(),
-            user_minimal_priceV = user_minimal_priceO.val(),
+                    user_emailV = user_emailO.val(),
+                    user_nameV = user_nameO.val(),
+                    user_passwordV = user_passwordO.val(),
+                    user_imgV = user_imgO.val(),
+                    user_phoneV = user_phoneO.val(),
+                    user_aboutV = user_aboutO.val(),
+                    user_contact_fioV = user_contact_fioO.val(),
+                    user_company_nameV = user_company_nameO.val(),
+                    user_minimal_priceV = user_minimal_priceO.val(),
                     error_mess = "", error_flag = null;
 
             if(t.error_email){
@@ -160,16 +160,16 @@
                     error_flag = 1;
                 }
                 <% if (@user.id.blank?) %>
-                    if(user_passwordV.length < 1){
-                        user_passwordO.parent().parent().addClass("fail");
-                        error_mess += "Пароль не указали<br/>";
-                        error_flag = 1;
-                    }
-                    if(user_imgV.length < 1){
-                        user_imgO.parent().parent().addClass("fail");
-                        error_mess += "Не выбрали фото<br/>";
-                        error_flag = 1;
-                    }
+                if(user_passwordV.length < 1){
+                    user_passwordO.parent().parent().addClass("fail");
+                    error_mess += "Пароль не указали<br/>";
+                    error_flag = 1;
+                }
+                if(user_imgV.length < 1){
+                    user_imgO.parent().parent().addClass("fail");
+                    error_mess += "Не выбрали фото<br/>";
+                    error_flag = 1;
+                }
                 <% end %>
                 if(user_phoneV.length < 1){
                     user_phoneO.parent().parent().addClass("fail");
@@ -195,16 +195,16 @@
                     error_flag = 1;
                 }
                 <% if (@user.id.blank?) %>
-                    if(user_passwordV.length < 1){
-                        user_passwordO.parent().parent().addClass("fail");
-                        error_mess += "Пароль не указали<br/>";
-                        error_flag = 1;
-                    }
-                    if(user_imgV.length < 1){
-                        user_imgO.parent().parent().addClass("fail");
-                        error_mess += "Не выбрали лого<br/>";
-                        error_flag = 1;
-                    }
+                if(user_passwordV.length < 1){
+                    user_passwordO.parent().parent().addClass("fail");
+                    error_mess += "Пароль не указали<br/>";
+                    error_flag = 1;
+                }
+                if(user_imgV.length < 1){
+                    user_imgO.parent().parent().addClass("fail");
+                    error_mess += "Не выбрали лого<br/>";
+                    error_flag = 1;
+                }
                 <% end %>
                 if(user_phoneV.length < 1){
                     user_phoneO.parent().parent().addClass("fail");
@@ -243,3 +243,4 @@
         return t;
     }({}))
 </script>
+
