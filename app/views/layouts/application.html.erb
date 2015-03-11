@@ -30,12 +30,12 @@
                 </div>
             </div>
             <div class="login-links">
-                <% if(!current_user) %>
-                    <a href="/users/sign_in" >Войти</a>
-                    <a href="/users/sign_up" class="last">Регистрация</a>
+                <% if current_user.present? %>
+                  <%= link_to "Личный кабинет", "/profile"%>
+                  <a href="javascript: void(0)" id="logout" class="last">Выйти</a>
                 <% else %>
-                    <%= link_to "Личный кабинет", "/profile"%>
-                    <a href="javascript: void(0)" id="logout" class="last">Выйти</a>
+                  <a href="/users/sign_in" >Войти</a>
+                  <a href="/users/sign_up" class="last">Регистрация</a>
                 <% end %>
             </div>
             <a href="/" id="logo">

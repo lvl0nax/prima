@@ -15,10 +15,10 @@ class ProductsController < ApplicationController
         @product = Product.new
         @label_btn = "Добавить товар"
         if !params[:category_id].blank?
-          arr_c = Category.find_by_id(params[:category_id]).filters
-          if(!arr_c.blank?)
+          arr_c = Category.find(params[:category_id]).filters
+          if arr_c.present?
             arr_cs = arr_c.split("&")
-            @filters = Filter.find_all_by_id(arr_cs)
+            @filters = Filter.where(id: arr_cs)
           end
         else
           @filters = Filter.all
@@ -29,22 +29,23 @@ class ProductsController < ApplicationController
   end
 
   def edit
-    if is_admin? || (current_user  && current_user.id == Product.find(params[:id]).user_id)
-        @product = Product.find(params[:id])
+    @product = Product.find(params[:id])
+    if is_admin? || (current_user  && current_user.id == @product.user_id)
+
         @label_btn = "сохранить изменения"
         
-        if !params[:category_id].blank?
-          arr_c = Category.find_by_id(params[:category_id]).filters
-          if(!arr_c.blank?)
+        if  params[:category_id].present?
+          arr_c = Category.find(params[:category_id]).filters
+          if arr_c.present?
             arr_cs = arr_c.split("&")
-            @filters = Filter.find_all_by_id(arr_cs)
+            @filters = Filter.where(id: arr_cs)
           end
         else
           @filters = Filter.all
         end
         
         @prod_filter = {}
-        if(!@product.filters.blank?)
+        if @product.filters.present?
           @product.filters.split("&").each do |sp|
             @prod_filter[sp.split("-")[0]] = sp.split("-")[1]
           end
@@ -57,9 +58,9 @@ class ProductsController < ApplicationController
 
   def create
 
-    params[:product][:discount] = params[:product][:discount].blank? ? 0 : params[:product][:discount]
+    params[:product][:discount] =0 if params[:product][:discount].blank?
 
-    @product = Product.new(params[:product])
+    @product = Product.new(permitted_params)
 
     respond_to do |format|
       if @product.save
@@ -75,15 +76,11 @@ class ProductsController < ApplicationController
   def update
     @product = Product.find(params[:id])
 
-    if(params[:product][:img_product].blank?)
-      params[:product][:img_product] = @product.img_product
-    end
-    if(params[:product][:discount].blank?)
-      params[:product][:discount] = 0
-    end
+    params[:product][:img_product] = @product.img_product if params[:product][:img_product].blank?
+    params[:product][:discount] = 0 if params[:product][:discount].blank?
 
     respond_to do |format|
-      if @product.update_attributes(params[:product])
+      if @product.update_attributes(permitted_params)
         format.html { redirect_to @product, :notice => 'Product was successfully updated.' }
         format.json { head :ok }
       else
@@ -104,5 +101,10 @@ class ProductsController < ApplicationController
       format.html { redirect_to categories_path }
       format.json { head :ok }
     end
+  end
+
+  private
+  def permitted_params
+    params.require(:product).permit(:title, :brand, :value_type, :value_price, :user_id, :category_id, :img_product, :description, :filters, :discount, :status) if current_user.role.to_i == 1
   end
 end

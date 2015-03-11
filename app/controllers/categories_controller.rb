@@ -22,25 +22,25 @@ class CategoriesController < ApplicationController
         @filter_obj[f.id][value.split(")*")[0]] = value.split(")*")[1]
       end
     end
-    if !@category.filters.blank?
-      @cat_filters = Filter.find_all_by_id(@category.filters.split("&"))
+    if @category.filters.present?
+      @cat_filters = Filter.where(id: @category.filters.split("&"))
     end
 
   end
 
   def new
-    if !is_admin?
+    unless is_admin?
       redirect_to root_url
     else
-        @title = "Создание категории"
-        @label_btn = "Добавить категорию"
-        @category = Category.new
-        @filters = Filter.all
+      @title = "Создание категории"
+      @label_btn = "Добавить категорию"
+      @category = Category.new
+      @filters = Filter.all
 
-        @cat_filters = []
-        if !@category.filters.blank?
-          @cat_filters = @category.filters.split("&")
-        end
+      @cat_filters = []
+      if @category.filters.present?
+        @cat_filters = @category.filters.split("&")
+      end
 
     end
   end
@@ -63,7 +63,7 @@ class CategoriesController < ApplicationController
   end
 
   def create
-    @category = Category.new(params[:category])
+    @category = Category.new(permitted_params)
 
     respond_to do |format|
       if @category.save
@@ -79,7 +79,7 @@ class CategoriesController < ApplicationController
   def update
     @category = Category.find(params[:id])
     respond_to do |format|
-      if @category.update_attributes(params[:category])
+      if @category.update_attributes(permitted_params)
         format.html { redirect_to @category, :notice => 'Category was successfully updated.' }
         format.json { head :ok }
       else
@@ -97,5 +97,10 @@ class CategoriesController < ApplicationController
       format.html { redirect_to categories_url }
       format.json { head :ok }
     end
+  end
+
+  private
+  def permitted_params
+    params.require(:category).permit(:name, :search_title, :desccat, :description, :filters, :keywords) if current_user.role.to_i == 1
   end
 end

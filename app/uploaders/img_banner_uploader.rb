@@ -24,10 +24,6 @@ class ImgBannerUploader < CarrierWave::Uploader::Base
        process :resize_to_fill => [970, 274]
     end
 
-    def filename
-      super.chomp(File.extname(super)) + '.jpg'
-    end
-
     def extension_white_list
       %w(jpg jpeg gif png)
     end

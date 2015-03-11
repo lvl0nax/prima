@@ -40,7 +40,7 @@ class PagesController < ApplicationController
   end
 
   def create
-    @page = Page.new(params[:page])
+    @page = Page.new(permitted_params)
 
     respond_to do |format|
       if @page.save
@@ -57,7 +57,7 @@ class PagesController < ApplicationController
     @page = Page.find(params[:id])
 
     respond_to do |format|
-      if @page.update_attributes(params[:page])
+      if @page.update_attributes(permitted_params)
         format.html { redirect_to @page, :notice => 'Page was successfully updated.' }
         format.json { head :ok }
       else
@@ -79,5 +79,10 @@ class PagesController < ApplicationController
       format.html { redirect_to pages_url }
       format.json { head :ok }
     end
+  end
+
+  private
+  def permitted_params
+    params.require(:page).permit(:title, :keywords, :descpage, :description, :search_title) if current_user.role.to_i == 1
   end
 end

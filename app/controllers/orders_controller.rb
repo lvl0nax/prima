@@ -11,40 +11,35 @@ class OrdersController < ApplicationController
     def show
         @order = Order.find(params[:id])
 
-        if(@order.userto_id != -1)
-            @userTo = User.find_by_id(@order.userto_id)
-        end
+        @userTo = User.find(@order.userto_id) unless @order.userto_id == -1
 
         @products = []
 
         @order.content.split(",").each do |arr_text|
           id = arr_text.split("|")[0]
           count = arr_text.split("|")[1]
-          p = Product.find_by_id(id)
-          p['count'] = count
+          p = Product.find(id)
+          p.count = count
           @products.push(p)
         end
 
-        @user = User.find_by_id(@order.user_id)
+        @user = User.find(@order.user_id)
 
-        if (current_user && (current_user == @user || current_user == @userTo || !is_admin?))
-        else
-            redirect_to root_url
+        unless current_user && (current_user == @user || current_user == @userTo || !is_admin?)
+          redirect_to root_url
         end
     end
 
     def new
-        if !cookies[:card].nil?
+        if cookies[:card].present?
             @order = JSON.parse(cookies[:card])
             @order_users = []
             @order_users_obj = {}
-            if(!@order.blank?)
+            if @order.present?
               @order.each do |o|
-                if(!@order_users.include?(o[1]['user']))
-                  @order_users.push(o[1]['user'])
-                end
+                @order_users.push(o[1]['user']) unless @order_users.include?(o[1]['user'])
               end
-              @order_users_obj = User.find_all_by_id(@order_users)
+              @order_users_obj = User.where(id: @order_users)
             end
         end
 
@@ -54,39 +49,34 @@ class OrdersController < ApplicationController
     end
 
     def change_status
-        @order = Order.find_by_id(params[:id])
+        @order = Order.find(params[:id])
 
         if current_user && current_user.id == @order.user_id
             @order.status = params["status"]
             @order.save
 
-            render :json => {
-                :status => 1
-            }
+            render json: { status: 1 }
         else
-            render :json => {
-                :status => 0
-            }
+            render json: { status: 0 }
         end
     end
 
   def create_order
 
-      if !cookies[:card].nil?
+      if cookies[:card].present?
 
             @order = JSON.parse(cookies[:card])
 
             @uriks = {} #Объект юридичиских лиц, которым будет рассылаться заказ
+            @order.each_pair do |k,v| #Группировка по юридическим лицам
+              buffer = Product.find(k)
+              buffer.count = (v['count'])
 
-            @order.each do |o| #Группировка по юридическим лицам
-                buffer = Product.find_by_id(o[0])
-                buffer['count'] = (o[1]['count'])
+              if @uriks[buffer.user_id].blank?
+                  @uriks[buffer.user_id] = []
+              end
 
-                if (@uriks[buffer.user_id].nil?)
-                    @uriks[buffer.user_id] = []
-                end
-
-                @uriks[buffer.user_id].push(buffer)
+              @uriks[buffer.user_id].push(buffer)
             end
 
             @order_for_fizik = Suborder.new #костыль для взятия id следующего подзаказа
@@ -94,11 +84,10 @@ class OrdersController < ApplicationController
 
             @order_ids = [] #будет хранить id заказов
             @status_order = [] #будет хранить статус заказов
-
-            @uriks.each do |p|
+            @uriks.each_pair do |k,v|
                 @order_for_urik = Order.new # Ордер хранит заказы атомные для юриков
 
-                @order_for_urik.user_id = p[0]
+                @order_for_urik.user_id = k
                 @order_for_urik.userto_id = current_user ? current_user.id : -1
                 @order_for_urik.name = params[:fio]
                 @order_for_urik.phone = params[:phone]
@@ -108,33 +97,33 @@ class OrdersController < ApplicationController
                 @order_for_urik.suborder_id = @order_for_fizik.id
                 @order_for_urik.status = 0
 
-                @order_for_urik.content = []
+                @order_for_urik.content = ''
 
                 total_price = 0
+                content = []
+                v.each do |pr|
+                    content.push( pr.id.to_s + "|" + pr.count.to_s)
 
-                p[1].each do |pr|
-                    @order_for_urik.content.push( pr.id.to_s + "|" + pr.count.to_s)
-
-                    if pr.discount != "0"
+                    if pr.discount.present? && pr.discount != '0'
                         act_disc = 0
-                        disc_arr = pr.discount.split("&")
-                        discObj = {}
+                        disc_arr = pr.discount.split('&')
+                        disc_obj = {}
                         disc_arr.each do |discPar|
-                          discObj[discPar.split(")*")[0]] = discPar.split(")*")[1]
+                          disc_obj[discPar.split(")*")[0]] = discPar.split(")*")[1]
                         end
-                        discObj.each do |datom|
-                          if(datom[0].to_f <= pr.count)
-                            act_disc = datom[1].to_f
+                        disc_obj.each_pair do |count, value|
+                          if count.to_i <= pr.count
+                            act_disc = value.to_f
                           end
                         end
-                        total_price += pr.count * (pr.value_price.to_f - (pr.value_price.to_f * act_disc) / 100)
+                        total_price += pr.count * (pr.value_price.to_f - (pr.value_price.to_f * act_disc / 100))
                     else
                       total_price += pr.count * pr.value_price.to_f
                     end
                 end
 
                 @order_for_urik.total = total_price.to_s
-                @order_for_urik.content = @order_for_urik.content.join(",")
+                @order_for_urik.content = content.join(",")
 
                 @order_for_urik.save
                 @order_ids.push(@order_for_urik.id)
@@ -150,19 +139,15 @@ class OrdersController < ApplicationController
 
             cookies[:card] = "" #обнуление корзины
 
-            render :json => {
-                :ids => @order_ids.join("-"),
-                :count => @order_ids.count,
-                :status => 1
-            }
+            render json: {
+                     ids: @order_ids.join("-"),
+                     count: @order_ids.count,
+                     status: 1
+                   }
 
       end
 
-      if @order.blank?
-        render :json => {
-            :status => 0
-        }
-      end
+      render json: { status: 0 } if @order.blank?
   end
 
 end

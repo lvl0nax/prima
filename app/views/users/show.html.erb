@@ -1,6 +1,6 @@
 <div class="box box-usual">
 
-    <% if(@user.role.to_i == 1 || @user.role.to_i == 2) %>
+    <% if @user.role.to_i == 1 || @user.role.to_i == 2 %>
         <h1>Профиль</h1>
         <% else %>
         <h1>О компании</h1>
@@ -11,7 +11,7 @@
             <%= image_tag @user.img_url(:big).to_s %>
         </div>
         <div class="profile-right">
-            <% if(@user.role.to_i == 1 || @user.role.to_i == 2) %>
+            <% if @user.role.to_i == 1 || @user.role.to_i == 2 %>
             <div class="profile-info">
                 <div class="profile-info-label">ФИО:</div>
                 <div class="profile-info-data"><%= @user.name %></div>
@@ -98,7 +98,7 @@
                     </div>
                     <div class="my-order-data">
                         <% o.uriks.split('-').each do |ol|%>
-                            <% buffer_order = Order.find_by_id(ol)%>
+                            <% buffer_order = Order.find(ol)%>
                             <div class="nclear">
                                 <a href="/orders/<%= buffer_order.id%>">Заказ #<%= buffer_order.id%> (статус <%= Order::STATUS[buffer_order.status]%>)</a>
                             </div>

@@ -42,7 +42,7 @@ class BannersController < ApplicationController
   end
 
   def create
-    @banner = Banner.new(params[:banner])
+    @banner = Banner.new(permitted_params)
     respond_to do |format|
       if @banner.save
         format.html { redirect_to banners_path }
@@ -62,7 +62,7 @@ class BannersController < ApplicationController
     end
 
     respond_to do |format|
-      if @banner.update_attributes(params[:banner])
+      if @banner.update_attributes(permitted_params)
         format.html { redirect_to banners_path }
         format.json { head :ok }
       else
@@ -84,5 +84,10 @@ class BannersController < ApplicationController
       format.html { redirect_to banners_url }
       format.json { head :ok }
     end
+  end
+
+  private
+  def permitted_params
+    params.require(:banner).permit(:title, :url, :img_banner, :description, :position) if current_user.role.to_i == 1
   end
 end

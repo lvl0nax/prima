@@ -1,6 +1,7 @@
 # -*- encoding : utf-8 -*-
 
 class Product < ActiveRecord::Base
+  attr_accessor :count
 
   belongs_to :category
   belongs_to :user

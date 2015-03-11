@@ -21,7 +21,7 @@
                   </td>
                   <td>
                       <% if o.userto_id != -1
-                        @userTo = User.find_by_id(o.userto_id)%>
+                        @userTo = User.find(o.userto_id)%>
                         <a href="/profile/<%= @userTo.id%>"><%= (@userTo.role.to_i == 1 || @userTo.role.to_i == 2) ? truncate(@userTo.name, {:length => 14}) : truncate(@userTo.company_name, {:length => 14})%></a>
                         <% else %>
                         нет в базе

@@ -26,7 +26,7 @@
                   <div class="product-info-label">Характеристики:</div>
                   <% @product.arr_val.each do |fil| %>
                   <div class="product-info-data">
-                      <% filter = Filter.find_by_id(fil[0]) %>
+                      <% filter = Filter.find(fil[0]) %>
                       <% if !filter.blank? %>
                           <%= filter.name %> : <%= filter.arr_val[fil[1]]%>
                       <% end %>

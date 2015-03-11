@@ -6,35 +6,29 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-    @products = products.where(user_id == params[:id])
-  end
-
-  def new
-    @user = User.new
-    #@users = User.find_by_role(1)
-    @label_btn = "Зарегистрироваться"
+    @products = Product.where(user_id: params[:id])
   end
 
   def edit
-    if (!current_user)
+    if current_user.blank?
       redirect_to new_user_path
-    elsif (current_user && current_user.id.to_s != params[:id] && !is_admin?)
+    elsif current_user && current_user.id.to_s != params[:id] && !is_admin?
       redirect_to root_url
     else
       @user = User.find(params[:id])
-      @title = "Редактирование пользвателя " + @user.name
-      @users = User.find_by_role(1)
+      @title = "Редактирование пользвателя " + @user.try(:name).to_s
+      @users = User.where(role: 1)
       @label_btn = "Сохранить изменения"
     end
   end
 
   def create
-    @user = User.new(params[:user])
+    @user = User.new(permitted_params)
     respond_to do |format|
       @user.skip_pass = true
       if @user.save
         sign_in(@user)
-        UserMailer.welcome_email(@user, params[:user][:password]).deliver
+        # UserMailer.welcome_email(@user, params[:user][:password]).deliver
         format.html { redirect_to "/profile", :notice => 'User was successfully created.' }
         format.json { render :json => @user, :status => :created, :location => @user }
       else
@@ -47,12 +41,10 @@ class UsersController < ApplicationController
   def update
     @user = User.find(params[:id])
 
-    if(params[:user][:img].blank?)
-      params[:user][:img] = @user.img
-    end
+    permitted_params[:img] = @user.img if permitted_params[:img].blank?
 
     respond_to do |format|
-      if @user.update_attributes(params[:user])
+      if @user.update_attributes(permitted_params)
         sign_in(@user)
         format.html { redirect_to "/profile", :notice => 'User was successfully updated.' }
         format.json { head :ok }
@@ -78,9 +70,9 @@ class UsersController < ApplicationController
   end
 
   def profile
-    if(!params[:id].blank?)
+    if params[:id].present?
 
-        @user = User.find_by_id(params[:id])
+        @user = User.find(params[:id])
 
         if(@user.blank?)
             redirect_to root_url
@@ -88,10 +80,10 @@ class UsersController < ApplicationController
             render :template => "/users/show.html.erb"
         end
 
-    elsif(params[:id].blank? && current_user)
+    elsif params[:id].blank? && current_user
 
-        @user = User.find_by_id(current_user.id)
-        render :template => "/users/show.html.erb"
+        @user = current_user
+        render template: "/users/show.html.erb"
 
     else
         redirect_to root_url
@@ -100,13 +92,13 @@ class UsersController < ApplicationController
 
     def list
         if is_admin?
-            @users = User.find(:all)
-            @usersObj = {}
+            @users = User.all
+            @users_obj = {}
             @users.each do |u|
-                if (@usersObj[u.role.to_s].nil?)
-                    @usersObj[u.role.to_s] = []
+                if (@users_obj[u.role.to_s].nil?)
+                  @users_obj[u.role.to_s] = []
                 end
-                @usersObj[u.role.to_s].push(u)
+                @users_obj[u.role.to_s].push(u)
             end
         else
             redirect_to root_url
@@ -114,7 +106,7 @@ class UsersController < ApplicationController
     end
 
   def checkemailvalid
-    @user = User.find_by_email(params[:email])
+    @user = User.find_by(email: params[:email])
 
     respond_to do |format|
       if !@user.blank? && @user != current_user
@@ -125,56 +117,13 @@ class UsersController < ApplicationController
     end
   end
 
-  def change_pass
-    if(!current_user)
-      redirect_to root_url
-    end
+  def signout
+    sign_out current_user
+    render json: {res: 1}
   end
 
-  #ajax смена пароля
-
-  def change_pass_ajax
-    respond_to do |format|
-      if current_user.has_pass?(params[:old_pass])
-        params[:user] = {}
-        params[:user][:img] = current_user.img
-        params[:user][:password] = params[:pass]
-        current_user.skip_pass = true
-        if current_user.update_attributes(params[:user])
-          UserMailer.change_pass(current_user.email, params[:pass]).deliver
-          sign_in(@user)
-          format.json { render :json => {:status => 1}}
-        end
-      else
-        format.json { render :json => {:status => 0}}
-      end
-    end
+  private
+  def permitted_params
+    params.require(:user).permit(:role, :name, :bday, :company_name, :img, :contact_fio, :minimal_price, :phone, :about, :password)
   end
-
-  def recover_pass
-    user = User.find_by_email(params[:email])
-    respond_to do |format|
-      if (user.blank?)
-        format.json { render :json => {:status => 0}}
-      else
-        pass = random_word
-        user.skip_pass = true
-        if user.update_attributes({:password => pass, :img => user.img})
-          UserMailer.recover_pass(user, pass).deliver
-          format.json { render :json => {:status => 1}}
-        end
-      end
-    end
-  end
-
-  def random_word
-    letters = { ?v => 'aeiou', ?c => 'bcdfghjklmnprstvwyz' }
-    word = ''
-    'cvcvcvc'.each_byte do |x|
-      source = letters[x]
-      word << source[rand(source.length)].chr
-    end
-    return word
-  end
-
 end

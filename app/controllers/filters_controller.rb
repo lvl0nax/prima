@@ -1,5 +1,8 @@
 # -*- encoding : utf-8 -*-
 class FiltersController < ApplicationController
+
+  before_action :permit_params
+
   def index
     if !is_admin?
       redirect_to root_url
@@ -47,7 +50,7 @@ class FiltersController < ApplicationController
         }}
       end
     else
-      filter = Filter.find_by_id(params[:id])
+      filter = Filter.find(params[:id])
       filter.destroy
       respond_to do |format|
         format.json { render :json => {
@@ -58,7 +61,7 @@ class FiltersController < ApplicationController
   end
 
   def add_value
-    filter = Filter.find_by_id(params[:id])
+    filter = Filter.find(params[:id])
     filter.values = params[:string]
     filter.save
     respond_to do |format|
@@ -69,34 +72,41 @@ class FiltersController < ApplicationController
   end
 
   def change_name
-    filter = Filter.find_by_id(params[:id])
+    filter = Filter.find(params[:id])
     params[:filter] = {}
     params[:filter][:name] = params[:name]
     respond_to do |format|
       if filter.update_attributes(params[:filter])
-        format.json { render :json => {
-          :status => 1
-        }}
+        format.json { render json: {
+                               status: 1
+                             }
+        }
       else
-        format.json { render :json => {
-          :status => 0
-        }}
+        format.json { render json: {
+                               status: 0
+                             }
+        }
 
       end
     end
   end
 
   def change_flag
-    filter = Filter.find_by_id(params[:id])
-    flag = filter.main_flag == true ? false : true
+    filter = Filter.find(params[:id])
+    flag = (filter.main_flag == true)
     respond_to do |format|
-      if filter.update_attributes(:main_flag => flag)
+      if filter.update_attributes(main_flag: flag)
         format.json { render :json => {
-          :status => 1,
-          :checked => flag
-        }}
+                               status: 1,
+                               :checked => flag
+                             }
+        }
       end
     end
   end
 
+  private
+  def permit_params
+    params.permit if current_user.role.to_i == 1
+  end
 end

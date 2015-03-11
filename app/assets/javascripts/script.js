@@ -230,7 +230,7 @@ w.session = (function(){
     };
 
     t.logout = function(){
-        $.post('/sessions/destroy_session', {ajax:1}, function(resp){
+        $.post('/users/signout', {ajax:1}, function(resp){
             if(resp.res = 1){
                 location.reload();
             } else {

@@ -1,7 +1,9 @@
 # -*- encoding : utf-8 -*-
 Marketwater::Application.routes.draw do
 
-  devise_for :users
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
+  devise_for :users, controllers: {registrations: 'users/registrations'}
   resources :filters do
     collection do
       post "create_filter"
@@ -43,6 +45,7 @@ Marketwater::Application.routes.draw do
       post "edit_user"
       post "destroy_user"
       post "recover_pass"
+      post "signout"
     end
   end
 

@@ -19,10 +19,6 @@ class ImgUploader < CarrierWave::Uploader::Base
        process :resize_to_fit => [250, 250]
     end
 
-    def filename
-      super.chomp(File.extname(super)) + '.jpg'
-    end
-
     def extension_white_list
       %w(jpg jpeg gif png)
     end

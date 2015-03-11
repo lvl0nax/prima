@@ -34,6 +34,10 @@ gem 'sms24x7'
 
 gem 'curb'
 
+gem 'activeadmin', github: 'activeadmin'
+gem 'formtastic'
+gem 'ckeditor'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 

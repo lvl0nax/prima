@@ -9,11 +9,11 @@
               <% end %>
             </div>
         </li>
-        <% if(!@userTo.blank?)%>
+        <% if @userTo.present?%>
         <li>
             <div class="info-order-label">От кого:</div>
             <div class="info-order-data">
-                <a href="/profile/<%= @userTo.id%>"><%= (@userTo.role.to_i == 1 || @userTo.role.to_i == 2) ? @userTo.name : @userTo.company_name%></a>
+                <a href="/profile/<%= @userTo.id%>"><%= ([1,2].include?(@userTo.role.to_i)) ? @userTo.name : @userTo.company_name%></a>
             </div>
         </li>
         <% end %>

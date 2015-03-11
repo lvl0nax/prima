@@ -1,6 +1,6 @@
 
 <div class="box box-usual">
-    <h1><%= Category.find_by_id(params[:category_id]).name%> &raquo; Создание товара</h1>
+    <h1><%= Category.find(params[:category_id].to_i).name%> &raquo; Создание товара</h1>
 
     <%= render 'form' %>
 </div>
