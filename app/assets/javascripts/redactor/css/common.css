@@ -91,7 +91,7 @@ hr {
 }
 #logo img{height: 60px}
 #logo:hover{
-    background: #54a9de
+    background: #54a9de;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#54a9de), to(#3491CB));
     background-image: -webkit-linear-gradient(top, #54a9de, #3491CB);
     background-image: -moz-linear-gradient(top, #54a9de, #3491CB);
