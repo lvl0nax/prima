@@ -712,7 +712,9 @@ hr {
 .products-full{overflow: hidden; }
 .products-full li{margin: 20px 0 0; padding: 0 0 20px; border-bottom: 1px dotted #c4c4c4}
 .products-full li.sort-line{margin: 20px 0 0; padding: 7px 10px; display: block; background: #fff; font-size: 15px; text-align: center}
-.products-full li:first-child{1px dotted #c4c4c4}
+.products-full li:first-child{
+  border-top: 1px dotted #c4c4c4;
+}
 .products-full-info{min-height: 120px; margin: 0 0 0 220px; position: relative; padding: 0 0 30px}
 .products-full-title{
     text-decoration: none;
