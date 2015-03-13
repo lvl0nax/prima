@@ -11,15 +11,15 @@ module ApplicationHelper
   end
 
   def all_pages
-    return Page.all
+    @pages ||= Page.all
   end
 
   def all_categories
-    return Category.all
+    @categories ||= Category.all
   end
 
   def banner_pack
-    return Banner.all.shuffle
+    @banner ||= Banner.all.shuffle
   end
 
 end

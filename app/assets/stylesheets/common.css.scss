@@ -68,14 +68,14 @@ hr {
 #logo{display: block; margin: 20px 0 0 40px; float: left}
 body{
     font: 13px/1.321em "trebuchet MS", Helvetica;
-    background: url("/assets/bg_body.jpg") 0 0 repeat-x #a8e6f3
+    background: image_url("bg_body.jpg") 0 0 repeat-x #a8e6f3;
 }
 
 #container{
     min-height:100%;
     position:relative;
     overflow:hidden;
-    background: url(/assets/bg_cont.jpg) center top no-repeat
+    background: image_url('bg_cont.jpg') center top no-repeat;
 }
 .content-top, #content-body{z-index: 2; width: 970px; margin: 0 auto; position: relative;}
 .content-top{height: 103px; z-index: 3}
@@ -99,7 +99,7 @@ body{
 }
 #content-footer .social-block{
     float: right;
-    background: url(/assets/blank.png);
+    background: image_url('blank.png');
     border-radius: 5px;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -109,7 +109,7 @@ body{
 }
 .social-icon{
     float: right; width: 36px; height: 36px;
-    background: url(/assets/sp.png) 0 0; margin: 0 0 0 8px
+    background: image_url('sp.png') 0 0; margin: 0 0 0 8px
 }
 .social-icon.social-icon-vk{background-position: 0 0}
 .social-icon.social-icon-twitter{background-position: -36px 0}
@@ -121,7 +121,7 @@ body{
     position: absolute;
     left: 0; bottom: 0; right: 0;
     height: 301px;
-    background: url(/assets/bg_footer.png)
+    background: image_url('bg_footer.png')
 }
 .footer-pages{float: left; width: 135px; margin: 0 27px 0 0}
 .footer-pages li{padding: 0 0 7px;}
@@ -144,7 +144,7 @@ body{
     height: 31px;
     text-align: center;
     text-decoration: none;
-    background: url(/assets/sp.png) -111px -30px;
+    background: image_url('sp.png') -111px -30px;
     font-size: 12px;
     color: #fff;
     text-shadow: 1px 1px rgba(0,0,0,.42);
@@ -160,7 +160,7 @@ body{
     line-height: 50px; color: #125a7c;
     font-weight: bold; font-size: 18px;
     text-decoration: none; text-align: center;
-    background: url(/assets/sp.png) 0 -148px;
+    background: image_url('sp.png') 0 -148px;
 }
 .navigation a:hover{color: #1c8eac}
 
@@ -172,7 +172,7 @@ body{
     left: -17px;
     width:  110px;
     height: 110px;
-    background: url(/assets/sp.png) 0 -36px;
+    background: image_url('sp.png') 0 -36px;
 }
 .banner-top{
     text-decoration: none;
@@ -192,7 +192,7 @@ body{
     display: none;
     position: absolute;
     right: 2px;
-    background: url(/assets/bg_footer.png) 0 bottom;
+    background: image_url('bg_footer.png') 0 bottom;
     color: #fff; padding: 10px;
     bottom: 2px;
     border-radius: 10px 0 10px 0;
@@ -223,7 +223,7 @@ body{
     margin: 0 0 17px;
 }
 .side-bar{
-    background: url(/assets/bg_cats.png);
+    background: image_url('bg_cats.png');
     border: 3px solid #46bbf1;
     border-radius: 7px;
     -moz-border-radius: 7px;
@@ -243,7 +243,7 @@ body{
     position: absolute;
     left: 0; top: 0;
     width: 12px; height: 17px;
-    background: url(/assets/sp.png) -99px 0;
+    background: image_url('sp.png') -99px 0;
 }
 .side-bar a:hover{ color: #64e2ff}
 .side-bar a:hover i{ left: 6px; background-position: -99px -17px;}
@@ -265,7 +265,7 @@ body{
     *display: inline; *zoom:1;
     margin: 14px 20px 14px 0;
     vertical-align: middle;
-    background: url(/assets/sp.png) -220px -36px;
+    background: image_url('sp.png') -220px -36px;
 }
 .partners-img{vertical-align: middle}
 
@@ -542,7 +542,7 @@ body{
 /* box */
 .content-content-box {
     position:relative;
-    background:#fff url(/assets/box-s.png) repeat-x 0 100%;
+    background:#fff image_url('box-s.png') repeat-x 0 100%;
     *background:#fff;
     padding:10px 20px;
     -moz-box-shadow:0px 1px 1px rgba(82,82,82,0.6);
@@ -808,7 +808,7 @@ body{
     content: "";
     width: 23px; height: 23px;
     display: block;
-    background: url(/assets/sp.png) -73px -14px
+    background: image_url('sp.png') -73px -14px
 }
 .card .card-title:after{
     position: absolute;
@@ -816,7 +816,7 @@ body{
     content: "";
     width: 8px; height: 8px;
     display: block;
-    background: url(/assets/sp.png) -73px -6px
+    background: image_url('sp.png') -73px -6px
 }
 
 #card-wrapper{display: none; border-top: 1px dashed #ccc; margin: 5px 0 0; padding: 0 0 7px; border-bottom: 1px dashed #ccc}
@@ -1028,7 +1028,7 @@ body{
 }
 .filter-block{
     padding: 19px 17px 11px;
-    background: url(/assets/bg_filters.png) repeat-x #e3e3e3;
+    background: image_url('bg_filters.png') repeat-x #e3e3e3;
     border-radius: 10px;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -1037,7 +1037,7 @@ body{
 .filter-line {
     height: 2px;
     width: 648px;
-    background: url(/assets/dotted-line.png) 0 0;
+    background: image_url('dotted-line.png') 0 0;
     margin: 0 0 14px;
     position: relative;
 }

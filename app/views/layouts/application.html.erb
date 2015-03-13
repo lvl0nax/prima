@@ -39,7 +39,7 @@
                 <% end %>
             </div>
             <a href="/" id="logo">
-                <img src="/assets/logo_norm.png" alt="">
+              <%= image_tag 'logo_norm.png', alt: '' %>
             </a>
         </div>
         <div id="content-body">
@@ -117,16 +117,16 @@
                         <% end %>
                         <div class="content-box">
                             <i class="partners-text"></i>
-                            <img src="/assets/partners.jpg" alt="" class="partners-img">
+                          <%= image_tag "partners.jpg", alt: '', class: 'partners-img'%>
                         </div>
                     <% end %>
-                    <% if( params[:controller] != "pages") %>
+                    <% if params[:controller] != "pages" %>
                         <%= yield %>
                     <% end %>
                 </div>
             </div>
 
-            <% if( params[:controller] == "pages") %>
+            <% if params[:controller] == "pages" %>
             <div class="main-content">
                 <%= yield %>
             </div>
@@ -141,7 +141,7 @@
                 Следуйте за нами
             </div>
             <div class="copyright-block">
-                <img src="/assets/logo.png" alt="Water Boom">
+              <%= image_tag "logo.png", alt: 'Water Boom'%>
 
                 <div>
                     © 2012. Все права защищены
@@ -149,21 +149,21 @@
             </div>
             <ul class="footer-pages">
                 
-                <% if(!all_pages.blank?) %>
+                <% if all_pages.present? %>
                     <% first_page = all_pages.first %>
                     <li><%= link_to first_page.title, page_path(first_page)%></li>
                     <li><%= link_to "Заказать online", categories_path%></li>
 
 
                     <% all_pages.each do |p| %>
-                        <% if(p != first_page) %>
+                        <% if p != first_page %>
                             <li><%= link_to p.title, page_path(p)%></li>
                         <% end %>
                     <% end %>
                 <% end %>
             </ul>
 
-            <% if(all_categories) %>
+            <% if all_categories %>
                 <ul class="footer-categories">
                     <% count_cat = 1%>
                     <% all_categories.each do |c| %>

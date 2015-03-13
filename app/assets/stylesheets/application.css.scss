@@ -54,15 +54,6 @@ hr {
 #content-footer{z-index: 10; position: absolute; bottom: 0; left: 50%; margin: 0 0 0 -475px; width: 950px; height: 20px; padding: 20px 0 15px}
 .copyright{padding: 0 0 0 40px; float: left}
 .header{padding: 40px 0 50px}
-.header-logo{padding: 0 0 0 40px; float: left; white-space: nowrap; font-size: 35px; text-decoration: none; color: #454545; position: relative}
-.header-logo span{font-size: 13px; color: #999; display:block; position: relative; top: 13px}
-.header-logo i.dotted{display:block; width: 17px; height: 17px; background: url(/assets/sprite.png) 0 -23px; position: absolute; top: 20px; left: 185px}
-.header-logo i.domen{display:block; width: 57px; height: 57px; background: url(/assets/sprite.png) -23px 0; position: absolute; top: -5px; left: 209px}
-.header-slogan{font-weight: bold;position: absolute; padding: 15px 0 0; text-align: right; top: 40px; right: 0}
-.header-slogan .info-contact{float: right; padding: 7px 0 7px 29px; position: relative;}
-.header-slogan .info-contact-skype i{display: block; position: absolute; top: 6px ; left: 0; width: 23px; height: 23px; background: url(/assets/sprite.png) -80px 0}
-.header-slogan .info-contact-email i{display: block; position: absolute; top: 6px ; left: 0; width: 23px; height: 23px; background: url(/assets/sprite.png) -80px -23px}
-
 .content-box{padding: 0 0 70px}
 .content-side{float: left; width: 200px; padding: 0 30px 0 0}
 .content-main{float: right; width: 710px;}
