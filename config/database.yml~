@@ -1,0 +1,13 @@
+
+default: &default
+  adapter: postgresql
+  pool: 5
+  timeout: 5000
+  encoding: unicode
+
+development:
+  <<: *default
+  database: prima_aqua_dev
+  username: monax
+  password: code4fun
+

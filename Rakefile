@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Marketwater::Application.load_tasks
+Prima::Application.load_tasks

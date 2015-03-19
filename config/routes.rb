@@ -1,7 +1,7 @@
 # -*- encoding : utf-8 -*-
-Marketwater::Application.routes.draw do
+Prima::Application.routes.draw do
 
-  devise_for :users, controllers: {registrations: 'users/registrations'}
+  devise_for :users, controllers: { registrations: 'users/registrations' }
   resources :filters do
     collection do
       post "create_filter"
@@ -36,13 +36,13 @@ Marketwater::Application.routes.draw do
     collection do
       get "profile"
       get "list"
-      post "create_user"
+      # post "create_user"
       get "change_pass"
       post "checkemailvalid"
       post "change_pass_ajax"
       post "edit_user"
       post "destroy_user"
-      post "recover_pass"
+      # post "recover_pass"
       post "signout"
     end
   end

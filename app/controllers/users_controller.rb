@@ -25,7 +25,6 @@ class UsersController < ApplicationController
   def create
     @user = User.new(permitted_params)
     respond_to do |format|
-      @user.skip_pass = true
       if @user.save
         sign_in(@user)
         # UserMailer.welcome_email(@user, params[:user][:password]).deliver

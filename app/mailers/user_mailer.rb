@@ -5,7 +5,7 @@ class UserMailer < ActionMailer::Base
   def welcome_email(user, pass)
     @user = user
     @pass = pass
-    @url  = "http://marketwater.webtech.spb.ru"
+    @url  = "http://Prima.webtech.spb.ru"
     mail(:to => user.email, :subject => "Добро пожаловать на waterboom.ru")
   end
 

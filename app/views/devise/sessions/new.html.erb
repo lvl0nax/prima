@@ -1,8 +1,10 @@
 <div class="box box-usual">
   <h1>Вход</h1>
+  <p class="notice"><%= notice %></p>
+  <p class="alert"><%= alert %></p>
 
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-
+    <%= devise_error_messages! %>
     <div class="form-field">
       <%= f.label :email %><br />
       <%= f.email_field :email, autofocus: true %>

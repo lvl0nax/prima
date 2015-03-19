@@ -8,9 +8,6 @@ class User < ActiveRecord::Base
   has_many :suborders
   has_many :orders
 
-  attr_accessor :skip_pass
-  attr_accessor :password
-
   mount_uploader :img, ImgUploader
 
   ROLES = {
@@ -20,12 +17,5 @@ class User < ActiveRecord::Base
       4 => "Юридическое лицо (поставщик)"
   }
 
-  def self.authenticate( id, pass )
-      user = find(id)
-      (user && user.enc_pass == pass.to_s) ? user : nil
-  end
 
-  def has_pass?(password)
-      self.enc_pass == Digest::SHA2.hexdigest(password)
-  end
 end
